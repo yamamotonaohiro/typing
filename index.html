@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
     <meta name="robots" content="noindex,nofollow">
-    <title>Classmate Typing - Final Version</title>
+    <title>Classmate Typing - Fixed Version</title>
     <style>
         body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background: #fdfdfd; color: #333; margin: 0; }
         #container { text-align: center; background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 85%; max-width: 600px; }
@@ -36,7 +36,7 @@
             { k: "&#12394;&#12363;&#12383;&#12395;&#12399;&#12427;&#12363;", r: "nakataniharuka", raw: "なかたにはるか" },
             { k: "&#12362;&#12363;&#12384;&#12388;&#12368;&#12415;", r: "okadatugumi", raw: "おかだつぐみ" },
             { k: "&#12373;&#12373;&#12365;&#12383;&#12363;&#12414;&#12373;", r: "sasakitakamasa", raw: "ささきたかまさ" },
-            { k: "&#12373;&#12384;&#12414;&#12373;&#12399;&#12427;&#12363;", r: "sadamasanaharuka", raw: "さだまさはるか" },
+            { k: "&#12373;&#12384;&#12414;&#12373;&#12399;&#12427;&#12363;", r: "sadamasaharuka", raw: "さだまさはるか" }, // 修正箇所
             { k: "&#12415;&#12378;&#12398;&#12360;&#12414;", r: "mizunoema", raw: "みずのえま" },
             { k: "&#12362;&#12362;&#12416;&#12429;&#12411;&#12362;&#12426;", r: "oomurohoori", raw: "おおむろほおり" },
             { k: "&#12372;&#12399;&#12356;&#12424;&#12358;", r: "gohaiyou", raw: "ごはいよう" },
@@ -67,7 +67,7 @@
             let arr = [...array];
             for (let i = arr.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
-                [arr[i], arr[arr[j] === undefined ? i : j]] = [arr[j], arr[i]];
+                [arr[i], arr[j]] = [arr[j], arr[i]];
             }
             return arr;
         }
