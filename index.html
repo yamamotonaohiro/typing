@@ -3,38 +3,42 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-select=none">
     <meta name="robots" content="noindex,nofollow">
-    <title>Classmate Typing - Keyboard Mode</title>
+    <title>Classmate Typing - OK Effect Mode</title>
     <style>
         body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; background: #fdfdfd; color: #333; margin: 0; min-height: 100vh; padding: 20px; box-sizing: border-box; overflow: hidden; }
-        #container { text-align: center; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 500px; z-index: 10; }
+        #container { text-align: center; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 500px; z-index: 10; position: relative; }
         #kana-display { font-size: 2rem; font-weight: bold; margin-bottom: 10px; color: #2c3e50; }
         #roma-display { font-size: 1.5rem; letter-spacing: 0.1em; color: #95a5a6; min-height: 1.2em; text-transform: lowercase; }
         .correct { color: #dcdde1; }
         .cursor { color: #e67e22; border-bottom: 3px solid #e67e22; }
         #score-board { margin-top: 20px; font-size: 1rem; color: #7f8c8d; }
         
-        /* 透明な隠し入力エリア（キーボードを呼び出すため） */
-        #hidden-input {
-            position: absolute; opacity: 0; pointer-events: none;
+        /* OK! 表示のスタイル */
+        #ok-badge {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0);
+            font-size: 5rem; font-weight: bold; color: #27ae60; background: rgba(255,255,255,0.9);
+            padding: 20px 40px; border-radius: 100px; border: 8px solid #27ae60;
+            z-index: 20; pointer-events: none; transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        
-        #start-btn {
-            background: #e67e22; color: white; border: none; padding: 15px 30px; border-radius: 50px; font-size: 1.2rem; font-weight: bold; cursor: pointer; margin-top: 20px;
-        }
+        #ok-badge.show { transform: translate(-50%, -50%) scale(1); }
+
+        #hidden-input { position: absolute; opacity: 0; pointer-events: none; }
+        #start-btn { background: #e67e22; color: white; border: none; padding: 15px 30px; border-radius: 50px; font-size: 1.2rem; font-weight: bold; cursor: pointer; margin-top: 20px; }
         .info { font-size: 0.75rem; color: #e74c3c; margin-top: 15px; font-weight: bold; }
     </style>
 </head>
 <body onclick="focusInput()">
 
     <div id="container">
+        <div id="ok-badge">OK!</div>
         <div id="kana-display">&#12479;&#12483;&#12503;&#12375;&#12390;&#38283;&#22987;</div>
         <div id="roma-display">tap to start</div>
         <div id="score-board">SCORE: <span id="score">0</span> | <span id="counter">PROGRESS: 0 / 23</span></div>
         <button id="start-btn" onclick="startGame()">START</button>
-        <div class="info">※半角英数モードで入力してください<br>FU / TU / TI / SI / SYE / JU 固定</div>
+        <div class="info">※半角英数モードで入力<br>FU / TU / TI / SI / SYE / JU 固定</div>
     </div>
 
-    <input type="text" id="hidden-input" autocomplete="off" autofocus>
+    <input type="text" id="hidden-input" autocomplete="off">
 
     <script>
         const originalQuestions = [
@@ -75,6 +79,7 @@
         const counterElement = document.getElementById("counter");
         const inputElement = document.getElementById("hidden-input");
         const startBtn = document.getElementById("start-btn");
+        const okBadge = document.getElementById("ok-badge");
 
         function shuffle(array) {
             let arr = [...array];
@@ -110,11 +115,11 @@
             }
             currentQ = shuffledList.pop();
             charIndex = 0;
-            speak(currentQ.raw);
             updateDisplay();
+            speak(currentQ.raw);
             const finished = originalQuestions.length - shuffledList.length;
             counterElement.innerText = `PROGRESS: ${finished} / ${originalQuestions.length}`;
-            inputElement.value = ""; // 入力をリセット
+            inputElement.value = "";
         }
 
         function updateDisplay() {
@@ -128,19 +133,25 @@
             romaElement.innerHTML = html;
         }
 
-        // 入力を監視
+        function showOk() {
+            okBadge.classList.add("show");
+            setTimeout(() => {
+                okBadge.classList.remove("show");
+                nextQuestion();
+            }, 600); // 0.6秒間 OK! を表示
+        }
+
         inputElement.addEventListener("input", (e) => {
-            if (!isStarted) return;
+            if (!isStarted || okBadge.classList.contains("show")) return;
             const val = inputElement.value.toLowerCase();
             const targetChar = currentQ.r[charIndex];
 
-            // 入力された最後の1文字をチェック
             if (val.endsWith(targetChar)) {
                 charIndex++;
                 if (charIndex === currentQ.r.length) {
                     score++;
                     scoreElement.innerText = score;
-                    nextQuestion();
+                    showOk(); // 正解演出
                 } else {
                     updateDisplay();
                 }
