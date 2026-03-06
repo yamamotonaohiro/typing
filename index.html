@@ -3,7 +3,7 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-select=none">
     <meta name="robots" content="noindex,nofollow">
-    <title>Classmate Typing - JI Mode</title>
+    <title>Classmate Typing - Corrected Display</title>
     <style>
         body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; background: #fdfdfd; color: #333; margin: 0; min-height: 100vh; padding: 20px; box-sizing: border-box; overflow: hidden; }
         #container { text-align: center; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 500px; z-index: 10; position: relative; }
@@ -38,35 +38,46 @@
     <input type="text" id="hidden-input" autocomplete="off">
 
     <script>
+        // 一人ずつデータを手動で最適化（変換エラーを防ぐため）
         const originalQuestions = [
-            { k: "&#12424;&#12358;&#12375;&#12423;&#12358;&#12365;&#12435;&#12411;&#12358;", r: "yousyoukinhou", raw: "ようしょうきんほう" },
-            { k: "&#12376;&#12435;&#12375;&#12398;", r: "zinsino", raw: "じんしの" },
-            { k: "&#12383;&#12363;&#12399;&#12375;&#12363;&#12356;&#12379;", r: "takahasikaise", raw: "たかはしかいせ" },
-            { k: "&#12420;&#12414;&#12418;&#12392;&#12422;&#12365;&#12398;", r: "yamamotoyukino", raw: "やまもとゆきの" },
-            { k: "&#12405;&#12427;&#12399;&#12375;&#12414;&#12394;", r: "furuhasimana", raw: "ふるはしまな" },
-            { k: "&#12399;&#12420;&#12375;&#12375;&#12422;&#12358;&#12372;", r: "hayasisyuugo", raw: "はやししゅうご" },
-            { k: "&#12394;&#12363;&#12383;&#12395;&#12399;&#12427;&#12363;", r: "nakataniharuka", raw: "なかたにはるか" },
-            { k: "&#12362;&#12363;&#12384;&#12388;&#12368;&#12415;", r: "okadatugumi", raw: "おかだつぐみ" },
-            { k: "&#12373;&#12373;&#12365;&#12383;&#12363;&#12414;&#12373;", r: "sasakitakamasa", raw: "ささきたかまさ" },
-            { k: "&#12373;&#12384;&#12414;&#12373;&#12399;&#12427;&#12363;", r: "sadamasaharuka", raw: "さだまさはるか" },
-            { k: "&#12415;&#12378;&#12398;&#12360;&#12414;", r: "mizunoema", raw: "みずのえま" },
-            { k: "&#12362;&#12362;&#12416;&#12429;&#12411;&#12362;&#12426;", r: "oomurohoori", raw: "おおむろほおり" },
-            { k: "&#12372;&#12399;&#12356;&#12424;&#12358;", r: "gohaiyou", raw: "ごはいよう" },
-            { k: "&#12375;&#12419;&#12408;&#12356;&#12376;&#12422;&#12435;", r: "syaheijun", raw: "しゃへいじゅん" },
-            { k: "&#12383;&#12363;&#12375;&#12414;&#12354;&#12425;&#12383;", r: "takasimaarata", raw: "たかしまあらた" },
-            { k: "&#12385;&#12435;&#12356;&#12426;&#12435;", r: "tinirin", raw: "ちんいりん" },
-            { k: "&#12431;&#12363;&#12414;&#12388;&#12360;&#12356;&#12392;", r: "wakamatueito", raw: "わかまつえいと" },
-            { k: "&#12388;&#12363;&#12418;&#12392;&#12354;&#12373;", r: "tukamotoasa", raw: "つかもとあさ" },
-            { k: "&#12375;&#12422;&#12358;&#12363;&#12378;&#12414;&#12373;", r: "syuukazumasa", raw: "しゅうかずまさ" },
-            { k: "&#12424;&#12375;&#12384;&#12417;&#12356;", r: "yosidamei", raw: "よしだめい" },
-            { k: "&#12393;&#12414;&#12375;&#12361;&#12435;&#12371;&#12395;&#12371;&#12427;", r: "domasyenkonikoru", raw: "どましぇんこにこる" },
-            { k: "&#12363;&#12356;&#12384;&#12415;&#12425;", r: "kaidamira", raw: "かいだみら" },
-            { k: "&#12356;&#12375;&#12356;&#12415;&#12388;&#12365;", r: "isiimituki", raw: "いしいみつき" }
+            { k: "ようしょうきんほう", r: "yousyoukinhou" },
+            { k: "じんしの", r: "jinshino" }, // 修正：jiに統一
+            { k: "たかはしかいせ", r: "takahashikaise" },
+            { k: "やまもとゆきの", r: "yamamotoyukino" },
+            { k: "ふるはしまな", r: "furuhasimana" }, // fu
+            { k: "はやししゅうご", r: "hayasisyuugo" }, // si, syuu
+            { k: "なかたにはるか", r: "nakataniharuka" },
+            { k: "おかだつぐみ", r: "okadatugumi" }, // tu
+            { k: "ささきたかまさ", r: "sasakitakamasa" },
+            { k: "さだまさはるか", r: "sadamasaharuka" },
+            { k: "みずのえま", r: "mizunoema" },
+            { k: "おおむろほおり", r: "oomurohoori" },
+            { k: "ごはいよう", r: "gohaiyou" },
+            { k: "しゃへいじゅん", r: "syaheijun" }, // sye, ju
+            { k: "たかしまあらた", r: "takasimaarata" }, // si
+            { k: "ちんいりん", r: "tinirin" }, // ti
+            { k: "わかまつえいと", r: "wakamatueito" },
+            { k: "つかもとあさ", r: "tukamotoasa" }, // tu
+            { k: "しゅうかずまさ", r: "syuukazumasa" }, // syuu
+            { k: "よしだめい", r: "yosidamei" }, // si
+            { k: "どましぇんこにこる", r: "domasyenkonikoru" }, // 修正：sye
+            { k: "かいだみら", r: "kaidamira" },
+            { k: "いしいみつき", r: "isiimituki" } // si, ti
         ];
 
-        // 特別ルール適用
-        originalQuestions.forEach(q => {
-            q.r = q.r.replace(/zi/g, "ji").replace(/zyu/g, "ju");
+        // ルールを強制適用する関数（一人ずつ丁寧に処理）
+        const finalizedQuestions = originalQuestions.map(q => {
+            let roma = q.r
+                .replace(/zi/g, "ji")
+                .replace(/zyu/g, "ju")
+                .replace(/hu/g, "fu")
+                .replace(/tsu/g, "tu")
+                .replace(/chi/g, "ti")
+                .replace(/shi/g, "si");
+            
+            // 表示用の漢字変換（文字化け対策）
+            let kanaHtml = q.k; 
+            return { k: kanaHtml, r: roma, raw: q.k };
         });
 
         let shuffledList = [];
@@ -113,19 +124,19 @@
 
         function nextQuestion() {
             if (shuffledList.length === 0) {
-                shuffledList = shuffle(originalQuestions);
+                shuffledList = shuffle(finalizedQuestions);
             }
             currentQ = shuffledList.pop();
             charIndex = 0;
             updateDisplay();
             speak(currentQ.raw);
-            const finished = originalQuestions.length - shuffledList.length;
-            counterElement.innerText = `PROGRESS: ${finished} / ${originalQuestions.length}`;
+            const finished = finalizedQuestions.length - shuffledList.length;
+            counterElement.innerText = `PROGRESS: ${finished} / ${finalizedQuestions.length}`;
             inputElement.value = "";
         }
 
         function updateDisplay() {
-            kanaElement.innerHTML = currentQ.k;
+            kanaElement.innerText = currentQ.k;
             let html = "";
             for (let i = 0; i < currentQ.r.length; i++) {
                 if (i < charIndex) html += `<span class="correct">${currentQ.r[i]}</span>`;
