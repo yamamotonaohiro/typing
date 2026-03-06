@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <title>Classmate Typing - Updated</title>
+    <style>
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background: #fdfdfd; color: #333; margin: 0; }
+        #container { text-align: center; background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 85%; max-width: 600px; }
+        #kana-display { font-size: 2.5rem; font-weight: bold; margin-bottom: 10px; color: #2c3e50; }
+        #roma-display { font-size: 1.8rem; letter-spacing: 0.2em; color: #95a5a6; min-height: 1.5em; }
+        .correct { color: #dcdde1; }
+        .cursor { color: #e67e22; border-bottom: 3px solid #e67e22; }
+        #score-board { margin-top: 30px; font-size: 1.2rem; color: #7f8c8d; }
+        #counter { font-size: 0.9rem; color: #bdc3c7; margin-top: 5px; }
+        .info { font-size: 0.8rem; color: #e74c3c; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+    <div id="container">
+        <div id="kana-display">&#12473;&#12506;&#12540;&#12473;&#12391;&#38283;&#22987;</div>
+        <div id="roma-display">press space to start</div>
+        <div id="score-board">SCORE: <span id="score">0</span></div>
+        <div id="counter">PROGRESS: 0 / 23</div>
+        <div class="info">※「つ=tu」「ち=ti」「し=si」で入力してください</div>
+    </div>
+
+    <script>
+        // 最新のスプレッドシートデータに基づくリスト
+        const originalQuestions = [
+            { k: "&#12424;&#12358;&#12375;&#12423;&#12358;&#12365;&#12435;&#12411;&#12358;", r: "yousyoukinhou", raw: "ようしょうきんほう" },
+            { k: "&#12376;&#12435;&#12375;&#12398;", r: "zinsino", raw: "じんしの" },
+            { k: "&#12383;&#12363;&#12399;&#12375;&#12363;&#12356;&#12379;", r: "takahasikaise", raw: "たかはしかいせ" },
+            { k: "&#12420;&#12414;&#12418;&#12392;&#12422;&#12365;&#12398;", r: "yamamotoyukino", raw: "やまもとゆきの" },
+            { k: "&#12405;&#12427;&#12399;&#12375;&#12414;&#12394;", r: "huruhasimana", raw: "ふるはしまな" },
+            { k: "&#12399;&#12420;&#12375;&#12375;&#12422;&#12358;&#12372;", r: "hayasisyuugo", raw: "はやししゅうご" },
+            { k: "&#12394;&#12363;&#12383;&#12395;&#12399;&#12427;&#12363;", r: "nakataniharuka", raw: "なかたにはるか" },
+            { k: "&#12362;&#12363;&#12384;&#12388;&#12368;&#12415;", r: "okadatugumi", raw: "おかだつぐみ" }, // 修正済み
+            { k: "&#12373;&#12373;&#12365;&#12383;&#12363;&#12414;&#12373;", r: "sasakitakamasa", raw: "ささきたかまさ" },
+            { k: "&#12373;&#12384;&#12414;&#12373;&#12399;&#12427;&#12363;", r: "sadamasanaharuka", raw: "さだまさはるか" },
+            { k: "&#12415;&#12378;&#12398;&#12360;&#12414;", r: "mizunoema", raw: "みずのえま" },
+            { k: "&#12362;&#12362;&#12416;&#12429;&#12411;&#12362;&#12426;", r: "oomurohoori", raw: "おおむろほおり" },
+            { k: "&#12372;&#12399;&#12356;&#12424;&#12358;", r: "gohaiyou", raw: "ごはいよう" },
+            { k: "&#12375;&#12419;&#12408;&#12356;&#12376;&#12422;&#12435;", r: "syaheizyun", raw: "しゃへいじゅん" },
+            { k: "&#12383;&#12363;&#12375;&#12414;&#12354;&#12425;&#12383;", r: "takasimaarata", raw: "たかしまあらた" },
+            { k: "&#12385;&#12435;&#12356;&#12426;&#12435;", r: "tinirin", raw: "ちんいりん" },
+            { k: "&#12431;&#12363;&#12414;&#12388;&#12360;&#12356;&#12392;", r: "wakamatuueito", raw: "わかまつえいと" },
+            { k: "&#12388;&#12363;&#12418;&#12392;&#12354;&#12373;", r: "tukamotoasa", raw: "つかもとあさ" },
+            { k: "&#12375;&#12422;&#12358;&#12363;&#12378;&#12414;&#12373;", r: "syuukazumasa", raw: "しゅうかずまさ" },
+            { k: "&#12424;&#12375;&#12384;&#12417;&#12356;", r: "yosidamei", raw: "よしだめい" },
+            { k: "&#12393;&#12414;&#12435;&#12375;&#12361;&#12435;&#12371;&#12395;&#12371;&#12427;", r: "domansienkonikoru", raw: "どまんしぇんこにこる" }, // 修正済み
+            { k: "&#12363;&#12356;&#12384;&#12415;&#12425;", r: "kaidamira", raw: "かいだみら" },
+            { k: "&#12356;&#12375;&#12356;&#12415;&#12388;&#12365;", r: "isiimituki", raw: "いしいみつき" }
+        ];
+
+        let shuffledList = [];
+        let currentQ = null;
+        let charIndex = 0;
+        let score = 0;
+        let isStarted = false;
+
+        const kanaElement = document.getElementById("kana-display");
+        const romaElement = document.getElementById("roma-display");
+        const scoreElement = document.getElementById("score");
+        const counterElement = document.getElementById("counter");
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function speak(text) {
+            const uttr = new SpeechSynthesisUtterance();
+            uttr.text = text;
+            uttr.lang = 'ja-JP';
+            speechSynthesis.speak(uttr);
+        }
+
+        function nextQuestion() {
+            if (shuffledList.length === 0) {
+                shuffledList = shuffle([...originalQuestions]);
+            }
+            currentQ = shuffledList.pop();
+            charIndex = 0;
+            speak(currentQ.raw);
+            updateDisplay();
+            const remained = originalQuestions.length - shuffledList.length;
+            counterElement.innerText = `PROGRESS: ${remained} / ${originalQuestions.length}`;
+        }
+
+        function updateDisplay() {
+            kanaElement.innerHTML = currentQ.k;
+            let html = "";
+            for (let i = 0; i < currentQ.r.length; i++) {
+                if (i < charIndex) html += `<span class="correct">${currentQ.r[i]}</span>`;
+                else if (i === charIndex) html += `<span class="cursor">${currentQ.r[i]}</span>`;
+                else html += `<span>${currentQ.r[i]}</span>`;
+            }
+            romaElement.innerHTML = html;
+        }
+
+        window.addEventListener("keydown", (e) => {
+            if (!isStarted && e.code === "Space") {
+                isStarted = true;
+                nextQuestion();
+                return;
+            }
+            if (isStarted && e.key.toLowerCase() === currentQ.r[charIndex]) {
+                charIndex++;
+                if (charIndex === currentQ.r.length) {
+                    score++;
+                    scoreElement.innerText = score;
+                    nextQuestion();
+                } else {
+                    updateDisplay();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
