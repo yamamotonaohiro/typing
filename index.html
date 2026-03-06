@@ -1,64 +1,40 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-select=none">
     <meta name="robots" content="noindex,nofollow">
-    <title>Classmate Typing - Mobile Ready</title>
+    <title>Classmate Typing - Keyboard Mode</title>
     <style>
-        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; background: #fdfdfd; color: #333; margin: 0; min-height: 100vh; padding: 20px; box-sizing: border-box; }
-        #container { text-align: center; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 500px; margin-bottom: 20px; }
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; background: #fdfdfd; color: #333; margin: 0; min-height: 100vh; padding: 20px; box-sizing: border-box; overflow: hidden; }
+        #container { text-align: center; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 500px; z-index: 10; }
         #kana-display { font-size: 2rem; font-weight: bold; margin-bottom: 10px; color: #2c3e50; }
         #roma-display { font-size: 1.5rem; letter-spacing: 0.1em; color: #95a5a6; min-height: 1.2em; text-transform: lowercase; }
         .correct { color: #dcdde1; }
         .cursor { color: #e67e22; border-bottom: 3px solid #e67e22; }
         #score-board { margin-top: 20px; font-size: 1rem; color: #7f8c8d; }
         
-        /* 仮想キーボードのスタイル */
-        #keyboard { display: grid; grid-template-columns: repeat(10, 1fr); gap: 5px; width: 100%; max-width: 600px; background: #eee; padding: 10px; border-radius: 10px; }
-        .key { background: white; border: none; padding: 15px 0; border-radius: 5px; font-size: 1.2rem; font-weight: bold; cursor: pointer; user-select: none; box-shadow: 0 2px 0 #ccc; }
-        .key:active { transform: translateY(2px); box-shadow: none; background: #ddd; }
-        .key-space { grid-column: span 10; background: #fff; }
-        .info { font-size: 0.7rem; color: #e74c3c; margin-top: 10px; font-weight: bold; line-height: 1.4; }
+        /* 透明な隠し入力エリア（キーボードを呼び出すため） */
+        #hidden-input {
+            position: absolute; opacity: 0; pointer-events: none;
+        }
+        
+        #start-btn {
+            background: #e67e22; color: white; border: none; padding: 15px 30px; border-radius: 50px; font-size: 1.2rem; font-weight: bold; cursor: pointer; margin-top: 20px;
+        }
+        .info { font-size: 0.75rem; color: #e74c3c; margin-top: 15px; font-weight: bold; }
     </style>
 </head>
-<body>
+<body onclick="focusInput()">
 
     <div id="container">
-        <div id="kana-display">&#12473;&#12506;&#12540;&#12473;&#12434;&#25276;&#12377;&#12363;&#12479;&#12483;&#12503;</div>
-        <div id="roma-display">tap space to start</div>
+        <div id="kana-display">&#12479;&#12483;&#12503;&#12375;&#12390;&#38283;&#22987;</div>
+        <div id="roma-display">tap to start</div>
         <div id="score-board">SCORE: <span id="score">0</span> | <span id="counter">PROGRESS: 0 / 23</span></div>
-        <div class="info">※JU/FU/TU/TI/SI/SYE固定</div>
+        <button id="start-btn" onclick="startGame()">START</button>
+        <div class="info">※半角英数モードで入力してください<br>FU / TU / TI / SI / SYE / JU 固定</div>
     </div>
 
-    <div id="keyboard">
-        <button class="key" onclick="handleInput('q')">Q</button>
-        <button class="key" onclick="handleInput('w')">W</button>
-        <button class="key" onclick="handleInput('e')">E</button>
-        <button class="key" onclick="handleInput('r')">R</button>
-        <button class="key" onclick="handleInput('t')">T</button>
-        <button class="key" onclick="handleInput('y')">Y</button>
-        <button class="key" onclick="handleInput('u')">U</button>
-        <button class="key" onclick="handleInput('i')">I</button>
-        <button class="key" onclick="handleInput('o')">O</button>
-        <button class="key" onclick="handleInput('p')">P</button>
-        <button class="key" onclick="handleInput('a')">A</button>
-        <button class="key" onclick="handleInput('s')">S</button>
-        <button class="key" onclick="handleInput('d')">D</button>
-        <button class="key" onclick="handleInput('f')">F</button>
-        <button class="key" onclick="handleInput('g')">G</button>
-        <button class="key" onclick="handleInput('h')">H</button>
-        <button class="key" onclick="handleInput('j')">J</button>
-        <button class="key" onclick="handleInput('k')">K</button>
-        <button class="key" onclick="handleInput('l')">L</button>
-        <button class="key" onclick="handleInput('z')">Z</button>
-        <button class="key" onclick="handleInput('x')">X</button>
-        <button class="key" onclick="handleInput('c')">C</button>
-        <button class="key" onclick="handleInput('v')">V</button>
-        <button class="key" onclick="handleInput('b')">B</button>
-        <button class="key" onclick="handleInput('n')">N</button>
-        <button class="key" onclick="handleInput('m')">M</button>
-        <button class="key key-space" onclick="handleInput(' ')">SPACE (START)</button>
-    </div>
+    <input type="text" id="hidden-input" autocomplete="off" autofocus>
 
     <script>
         const originalQuestions = [
@@ -78,7 +54,7 @@
             { k: "&#12375;&#12419;&#12408;&#12356;&#12376;&#12422;&#12435;", r: "syaheijun", raw: "しゃへいじゅん" },
             { k: "&#12383;&#12363;&#12375;&#12414;&#12354;&#12425;&#12383;", r: "takasimaarata", raw: "たかしまあらた" },
             { k: "&#12385;&#12435;&#12356;&#12426;&#12435;", r: "tinirin", raw: "ちんいりん" },
-            { k: "&#12431;&#12363;&#12414;&#12388;&#12360;&#12356;&#12392;", r: "wakamatuueito", raw: "わかまつえいと" },
+            { k: "&#12431;&#12363;&#12414;&#12388;&#12360;&#12356;&#12392;", r: "wakamatueito", raw: "わかまつえいと" },
             { k: "&#12388;&#12363;&#12418;&#12392;&#12354;&#12373;", r: "tukamotoasa", raw: "つかもとあさ" },
             { k: "&#12375;&#12422;&#12358;&#12363;&#12378;&#12414;&#12373;", r: "syuukazumasa", raw: "しゅうかずまさ" },
             { k: "&#12424;&#12375;&#12384;&#12417;&#12356;", r: "yosidamei", raw: "よしだめい" },
@@ -97,6 +73,8 @@
         const romaElement = document.getElementById("roma-display");
         const scoreElement = document.getElementById("score");
         const counterElement = document.getElementById("counter");
+        const inputElement = document.getElementById("hidden-input");
+        const startBtn = document.getElementById("start-btn");
 
         function shuffle(array) {
             let arr = [...array];
@@ -109,10 +87,21 @@
 
         function speak(text) {
             if (!window.speechSynthesis) return;
-            speechSynthesis.cancel(); 
+            speechSynthesis.cancel();
             const uttr = new SpeechSynthesisUtterance(text);
             uttr.lang = 'ja-JP';
             speechSynthesis.speak(uttr);
+        }
+
+        function startGame() {
+            isStarted = true;
+            startBtn.style.display = "none";
+            inputElement.focus();
+            nextQuestion();
+        }
+
+        function focusInput() {
+            if (isStarted) inputElement.focus();
         }
 
         function nextQuestion() {
@@ -125,6 +114,7 @@
             updateDisplay();
             const finished = originalQuestions.length - shuffledList.length;
             counterElement.innerText = `PROGRESS: ${finished} / ${originalQuestions.length}`;
+            inputElement.value = ""; // 入力をリセット
         }
 
         function updateDisplay() {
@@ -138,35 +128,23 @@
             romaElement.innerHTML = html;
         }
 
-        // 入力処理（PCキーボードとスマホ画面ボタン共通）
-        function handleInput(key) {
-            const input = key.toLowerCase();
-            if (input === " " || input === "space") {
-                if (!isStarted) {
-                    isStarted = true;
-                    nextQuestion();
-                }
-                return;
-            }
-            
-            if (isStarted && currentQ) {
-                if (input === currentQ.r[charIndex]) {
-                    charIndex++;
-                    if (charIndex === currentQ.r.length) {
-                        score++;
-                        scoreElement.innerText = score;
-                        nextQuestion();
-                    } else {
-                        updateDisplay();
-                    }
-                }
-            }
-        }
+        // 入力を監視
+        inputElement.addEventListener("input", (e) => {
+            if (!isStarted) return;
+            const val = inputElement.value.toLowerCase();
+            const targetChar = currentQ.r[charIndex];
 
-        // PCキーボード入力の監視
-        window.addEventListener("keydown", (e) => {
-            if (e.code === "Space") e.preventDefault(); // スクロール防止
-            handleInput(e.key === " " ? "space" : e.key);
+            // 入力された最後の1文字をチェック
+            if (val.endsWith(targetChar)) {
+                charIndex++;
+                if (charIndex === currentQ.r.length) {
+                    score++;
+                    scoreElement.innerText = score;
+                    nextQuestion();
+                } else {
+                    updateDisplay();
+                }
+            }
         });
     </script>
 </body>
