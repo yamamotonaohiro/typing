@@ -3,42 +3,112 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-select=none">
     <meta name="robots" content="noindex,nofollow">
-    <title>Classmate Typing - Finger Guide</title>
+    <title>Classmate Typing - Virtual Keyboard Guide</title>
     <style>
-        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; background: #fdfdfd; color: #333; margin: 0; min-height: 100vh; padding: 20px; box-sizing: border-box; }
-        #container { text-align: center; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 550px; position: relative; }
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; background: #fdfdfd; color: #333; margin: 0; min-height: 100vh; padding: 20px; box-sizing: border-box; overflow: hidden; }
+        #container { text-align: center; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 600px; position: relative; margin-bottom: 20px; }
         #kana-display { font-size: 2rem; font-weight: bold; margin-bottom: 10px; color: #2c3e50; }
         #roma-display { font-size: 1.5rem; letter-spacing: 0.1em; color: #95a5a6; min-height: 1.2em; text-transform: lowercase; }
         .correct { color: #dcdde1; }
         .cursor { color: #e67e22; border-bottom: 3px solid #e67e22; }
+        #score-board { margin-top: 20px; font-size: 1rem; color: #7f8c8d; }
         
-        /* 指ガイドのスタイル */
-        #finger-guide { margin-top: 30px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
-        .hands-container { display: flex; gap: 40px; }
-        .hand { display: flex; gap: 8px; }
-        .finger {
-            width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-size: 0.7rem; font-weight: bold; background: #eee; border: 2px solid #ddd; transition: all 0.2s;
-        }
-        /* 指ごとの色分け */
-        .pinky { border-color: #ff79c6; }
-        .ring { border-color: #bd93f9; }
-        .middle { border-color: #8be9fd; }
-        .index { border-color: #50fa7b; }
-        .thumb { border-color: #f1fa8c; }
-
-        .active-finger { background: #e67e22 !important; color: white !important; transform: scale(1.2); border-color: #e67e22; box-shadow: 0 0 10px rgba(230,126,34,0.5); }
-
+        /* OK! 表示のスタイル */
         #ok-badge {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0);
             font-size: 4rem; font-weight: bold; color: #27ae60; background: rgba(255,255,255,0.9);
             padding: 15px 30px; border-radius: 100px; border: 6px solid #27ae60;
-            z-index: 20; pointer-events: none; transition: transform 0.2s;
+            z-index: 20; pointer-events: none; transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         #ok-badge.show { transform: translate(-50%, -50%) scale(1); }
+
         #hidden-input { position: absolute; opacity: 0; pointer-events: none; }
         #start-btn { background: #e67e22; color: white; border: none; padding: 15px 30px; border-radius: 50px; font-size: 1.2rem; font-weight: bold; cursor: pointer; margin-top: 20px; }
         .info { font-size: 0.7rem; color: #7f8c8d; margin-top: 15px; }
+
+        /* バーチャルキーボードのスタイル */
+        #virtual-keyboard {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 4px;
+            background: #e0e0e0;
+            padding: 10px;
+            border-radius: 10px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .key-btn {
+            background: #fff;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 10px 5px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #555;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 45px;
+            box-shadow: 0 2px 0 #bbb;
+            transition: all 0.05s ease-out;
+        }
+        .key-btn:active {
+            transform: translateY(1px);
+            box-shadow: 0 1px 0 #aaa;
+        }
+
+        /* 特殊キーの幅調整 */
+        .key-row-2 { grid-column: span 1; margin-left: 15%; width: 85%; } /* A */
+        .key-row-3 { grid-column: span 1; margin-left: 25%; width: 75%; } /* Z */
+        .key-tab { grid-column: span 1; }
+        .key-caps { grid-column: span 1; }
+        .key-enter { grid-column: span 1; }
+        .key-shift { grid-column: span 1; }
+        .key-space { grid-column: span 6; } /* Space */
+        
+        .highlight-key {
+            background-color: #e67e22 !important; /* オレンジ */
+            color: white !important;
+            border-color: #d35400 !important;
+            box-shadow: 0 0 10px rgba(230,126,34,0.6);
+            transform: scale(1.05);
+        }
+
+        /* 行のオフセット調整 */
+        .row-start-tab { grid-column: 1 / span 1; } /* Q */
+        .row-start-caps { grid-column: 1 / span 1; margin-left: 20px; width: calc(100% - 20px); } /* A */
+        .row-start-shift-l { grid-column: 1 / span 1; margin-left: 40px; width: calc(100% - 40px); } /* Z */
+        .row-start-space { grid-column: 4 / span 1; } /* Spacebar start position */
+
+        /* 微調整用のFlexコンテナ */
+        .keyboard-row { display: flex; width: 100%; justify-content: center; gap: 4px; margin-bottom: 4px; }
+        .keyboard-row:first-child .key-btn:first-child { margin-left: 0; }
+        .keyboard-row:nth-child(2) .key-btn:first-child { margin-left: 1.5%; flex-basis: 7%; } /* Q row */
+        .keyboard-row:nth-child(3) .key-btn:first-child { margin-left: 3%; flex-basis: 7%; } /* A row */
+        .keyboard-row:nth-child(4) .key-btn:first-child { margin-left: 4.5%; flex-basis: 8%; } /* Z row */
+        
+        .keyboard-row .key-btn { flex-grow: 1; flex-shrink: 1; }
+
+        .key-row1 { flex: 1 1 8%; }
+        .key-row2 { flex: 1 1 8.5%; }
+        .key-row3 { flex: 1 1 9%; }
+        .key-space-layout { flex: 0 0 45%; } /* Space bar specific width */
+        .key-backspace { flex: 0 0 12%; }
+        .key-tab-layout { flex: 0 0 9%; }
+        .key-caps-layout { flex: 0 0 10.5%; }
+        .key-enter-layout { flex: 0 0 12%; }
+        .key-shift-layout { flex: 0 0 15%; }
+        .key-ctrl-layout { flex: 0 0 8%; }
+
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+            #container { padding: 20px; }
+            #kana-display { font-size: 1.8rem; }
+            #roma-display { font-size: 1.3rem; }
+            .key-btn { font-size: 0.9rem; height: 40px; }
+        }
+
     </style>
 </head>
 <body onclick="focusInput()">
@@ -49,29 +119,56 @@
         <div id="roma-display">tap to start</div>
         <div id="score-board">SCORE: <span id="score">0</span> / 23</div>
         <button id="start-btn" onclick="startGame()">START</button>
-
-        <div id="finger-guide">
-            <div id="target-key-label" style="font-weight: bold; color: #e67e22; font-size: 1.2rem; height: 1.5em;"></div>
-            <div class="hands-container">
-                <div class="hand">
-                    <div class="finger pinky" id="f-l-p">小</div>
-                    <div class="finger ring" id="f-l-r">薬</div>
-                    <div class="finger middle" id="f-l-m">中</div>
-                    <div class="finger index" id="f-l-i">人</div>
-                </div>
-                <div class="hand">
-                    <div class="finger index" id="f-r-i">人</div>
-                    <div class="finger middle" id="f-r-m">中</div>
-                    <div class="finger ring" id="f-r-r">薬</div>
-                    <div class="finger pinky" id="f-r-p">小</div>
-                </div>
-            </div>
-            <div style="font-size: 0.7rem; color: #999;">ホームポジションを意識しましょう</div>
-        </div>
-        <div class="info">JI / JU / FU / TU / TI / SI / SYE 固定</div>
+        <div class="info">※半角英数モードで入力<br>JI / JU / FU / TU / TI / SI / SYE 固定</div>
     </div>
 
     <input type="text" id="hidden-input" autocomplete="off">
+
+    <div id="virtual-keyboard">
+        <div class="keyboard-row">
+            <div class="key-btn key-row1" data-key="q">Q</div>
+            <div class="key-btn key-row1" data-key="w">W</div>
+            <div class="key-btn key-row1" data-key="e">E</div>
+            <div class="key-btn key-row1" data-key="r">R</div>
+            <div class="key-btn key-row1" data-key="t">T</div>
+            <div class="key-btn key-row1" data-key="y">Y</div>
+            <div class="key-btn key-row1" data-key="u">U</div>
+            <div class="key-btn key-row1" data-key="i">I</div>
+            <div class="key-btn key-row1" data-key="o">O</div>
+            <div class="key-btn key-row1" data-key="p">P</div>
+        </div>
+        <div class="keyboard-row">
+            <div class="key-btn key-row2 key-caps-layout" data-key="capslock" style="font-size: 0.8em;">Caps</div>
+            <div class="key-btn key-row2" data-key="a">A</div>
+            <div class="key-btn key-row2" data-key="s">S</div>
+            <div class="key-btn key-row2" data-key="d">D</div>
+            <div class="key-btn key-row2" data-key="f">F</div>
+            <div class="key-btn key-row2" data-key="g">G</div>
+            <div class="key-btn key-row2" data-key="h">H</div>
+            <div class="key-btn key-row2" data-key="j">J</div>
+            <div class="key-btn key-row2" data-key="k">K</div>
+            <div class="key-btn key-row2" data-key="l">L</div>
+            <div class="key-btn key-row2 key-enter-layout" data-key="enter" style="font-size: 0.8em;">Enter</div>
+        </div>
+        <div class="keyboard-row">
+            <div class="key-btn key-row3 key-shift-layout" data-key="shiftleft" style="font-size: 0.8em;">Shift</div>
+            <div class="key-btn key-row3" data-key="z">Z</div>
+            <div class="key-btn key-row3" data-key="x">X</div>
+            <div class="key-btn key-row3" data-key="c">C</div>
+            <div class="key-btn key-row3" data-key="v">V</div>
+            <div class="key-btn key-row3" data-key="b">B</div>
+            <div class="key-btn key-row3" data-key="n">N</div>
+            <div class="key-btn key-row3" data-key="m">M</div>
+            <div class="key-btn key-row3 key-shift-layout" data-key="shiftright" style="font-size: 0.8em;">Shift</div>
+        </div>
+        <div class="keyboard-row">
+            <div class="key-btn key-ctrl-layout" data-key="controlleft" style="font-size: 0.8em;">Ctrl</div>
+            <div class="key-btn key-ctrl-layout" data-key="altleft" style="font-size: 0.8em;">Alt</div>
+            <div class="key-btn key-space-layout" data-key=" ">Space</div>
+            <div class="key-btn key-ctrl-layout" data-key="altright" style="font-size: 0.8em;">Alt</div>
+            <div class="key-btn key-ctrl-layout" data-key="controlright" style="font-size: 0.8em;">Ctrl</div>
+        </div>
+    </div>
 
     <script>
         const originalQuestions = [
@@ -85,25 +182,15 @@
             { k: "かいだみら", r: "kaidamira" }, { k: "いしいみつき", r: "isiimituki" }
         ];
 
-        // 指マッピング (QWERTY)
-        const fingerMap = {
-            'q': 'f-l-p', 'a': 'f-l-p', 'z': 'f-l-p',
-            'w': 'f-l-r', 's': 'f-l-r', 'x': 'f-l-r',
-            'e': 'f-l-m', 'd': 'f-l-m', 'c': 'f-l-m',
-            'r': 'f-l-i', 't': 'f-l-i', 'f': 'f-l-i', 'g': 'f-l-i', 'v': 'f-l-i', 'b': 'f-l-i',
-            'y': 'f-r-i', 'u': 'f-r-i', 'h': 'f-r-i', 'j': 'f-r-i', 'n': 'f-r-i', 'm': 'f-r-i',
-            'i': 'f-r-m', 'k': 'f-r-m',
-            'o': 'f-r-r', 'l': 'f-r-r',
-            'p': 'f-r-p'
-        };
-
         const finalizedQuestions = originalQuestions.map(q => {
             let roma = q.r.replace(/zi/g, "ji").replace(/zyu/g, "ju").replace(/hu/g, "fu").replace(/tsu/g, "tu").replace(/chi/g, "ti").replace(/shi/g, "si");
             return { k: q.k, r: roma };
         });
 
         let shuffledList = [], currentQ = null, charIndex = 0, score = 0, isStarted = false;
-        const kanaElement = document.getElementById("kana-display"), romaElement = document.getElementById("roma-display"), scoreElement = document.getElementById("score"), inputElement = document.getElementById("hidden-input"), startBtn = document.getElementById("start-btn"), okBadge = document.getElementById("ok-badge"), targetKeyLabel = document.getElementById("target-key-label");
+        const kanaElement = document.getElementById("kana-display"), romaElement = document.getElementById("roma-display"), scoreElement = document.getElementById("score"), inputElement = document.getElementById("hidden-input"), startBtn = document.getElementById("start-btn"), okBadge = document.getElementById("ok-badge");
+        const virtualKeyboard = document.getElementById("virtual-keyboard");
+        const keyButtons = virtualKeyboard.querySelectorAll('.key-btn');
 
         function shuffle(array) {
             let arr = [...array];
@@ -132,7 +219,9 @@
         function focusInput() { if (isStarted) inputElement.focus(); }
 
         function nextQuestion() {
-            if (shuffledList.length === 0) shuffledList = shuffle(finalizedQuestions);
+            if (shuffledList.length === 0) {
+                shuffledList = shuffle(finalizedQuestions);
+            }
             currentQ = shuffledList.pop();
             charIndex = 0;
             updateDisplay();
@@ -149,20 +238,20 @@
                 else html += `<span>${currentQ.r[i]}</span>`;
             }
             romaElement.innerHTML = html;
-            updateFingerGuide();
+            highlightVirtualKey();
         }
 
-        function updateFingerGuide() {
-            // 全ての指をリセット
-            document.querySelectorAll('.finger').forEach(f => f.classList.remove('active-finger'));
-            if (!currentQ) return;
-            
+        function highlightVirtualKey() {
+            // 全てのキーのハイライトを解除
+            keyButtons.forEach(btn => btn.classList.remove('highlight-key'));
+
+            if (!currentQ || charIndex >= currentQ.r.length) return;
+
             const targetChar = currentQ.r[charIndex];
             if (targetChar) {
-                targetKeyLabel.innerText = targetChar.toUpperCase();
-                const fingerId = fingerMap[targetChar];
-                if (fingerId) {
-                    document.getElementById(fingerId).classList.add('active-finger');
+                const targetKeyBtn = virtualKeyboard.querySelector(`.key-btn[data-key="${targetChar}"]`);
+                if (targetKeyBtn) {
+                    targetKeyBtn.classList.add('highlight-key');
                 }
             }
         }
@@ -189,6 +278,25 @@
                 } else {
                     updateDisplay();
                 }
+            }
+        });
+
+        // 物理キーボード入力の監視（バーチャルキーボードのハイライトを更新するため）
+        window.addEventListener("keydown", (e) => {
+            if (isStarted && currentQ) {
+                // 物理キーが押されたら、バーチャルキーも瞬時にハイライトする（視覚的なフィードバック）
+                keyButtons.forEach(btn => btn.classList.remove('highlight-key'));
+                const pressedKey = e.key.toLowerCase();
+                const targetKeyBtn = virtualKeyboard.querySelector(`.key-btn[data-key="${pressedKey}"]`);
+                if (targetKeyBtn) {
+                    targetKeyBtn.classList.add('highlight-key');
+                }
+            }
+        });
+        window.addEventListener("keyup", (e) => {
+            if (isStarted && currentQ) {
+                // キーを離したらハイライトを元に戻す
+                highlightVirtualKey(); // 次の文字をハイライトし直す
             }
         });
     </script>
