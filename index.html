@@ -3,25 +3,42 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-select=none">
     <meta name="robots" content="noindex,nofollow">
-    <title>Classmate Typing - Corrected Display</title>
+    <title>Classmate Typing - Finger Guide</title>
     <style>
-        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; background: #fdfdfd; color: #333; margin: 0; min-height: 100vh; padding: 20px; box-sizing: border-box; overflow: hidden; }
-        #container { text-align: center; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 500px; z-index: 10; position: relative; }
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; background: #fdfdfd; color: #333; margin: 0; min-height: 100vh; padding: 20px; box-sizing: border-box; }
+        #container { text-align: center; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 550px; position: relative; }
         #kana-display { font-size: 2rem; font-weight: bold; margin-bottom: 10px; color: #2c3e50; }
         #roma-display { font-size: 1.5rem; letter-spacing: 0.1em; color: #95a5a6; min-height: 1.2em; text-transform: lowercase; }
         .correct { color: #dcdde1; }
         .cursor { color: #e67e22; border-bottom: 3px solid #e67e22; }
-        #score-board { margin-top: 20px; font-size: 1rem; color: #7f8c8d; }
+        
+        /* 指ガイドのスタイル */
+        #finger-guide { margin-top: 30px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        .hands-container { display: flex; gap: 40px; }
+        .hand { display: flex; gap: 8px; }
+        .finger {
+            width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 0.7rem; font-weight: bold; background: #eee; border: 2px solid #ddd; transition: all 0.2s;
+        }
+        /* 指ごとの色分け */
+        .pinky { border-color: #ff79c6; }
+        .ring { border-color: #bd93f9; }
+        .middle { border-color: #8be9fd; }
+        .index { border-color: #50fa7b; }
+        .thumb { border-color: #f1fa8c; }
+
+        .active-finger { background: #e67e22 !important; color: white !important; transform: scale(1.2); border-color: #e67e22; box-shadow: 0 0 10px rgba(230,126,34,0.5); }
+
         #ok-badge {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0);
-            font-size: 5rem; font-weight: bold; color: #27ae60; background: rgba(255,255,255,0.9);
-            padding: 20px 40px; border-radius: 100px; border: 8px solid #27ae60;
-            z-index: 20; pointer-events: none; transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-size: 4rem; font-weight: bold; color: #27ae60; background: rgba(255,255,255,0.9);
+            padding: 15px 30px; border-radius: 100px; border: 6px solid #27ae60;
+            z-index: 20; pointer-events: none; transition: transform 0.2s;
         }
         #ok-badge.show { transform: translate(-50%, -50%) scale(1); }
         #hidden-input { position: absolute; opacity: 0; pointer-events: none; }
         #start-btn { background: #e67e22; color: white; border: none; padding: 15px 30px; border-radius: 50px; font-size: 1.2rem; font-weight: bold; cursor: pointer; margin-top: 20px; }
-        .info { font-size: 0.75rem; color: #e74c3c; margin-top: 15px; font-weight: bold; }
+        .info { font-size: 0.7rem; color: #7f8c8d; margin-top: 15px; }
     </style>
 </head>
 <body onclick="focusInput()">
@@ -30,69 +47,63 @@
         <div id="ok-badge">OK!</div>
         <div id="kana-display">&#12479;&#12483;&#12503;&#12375;&#12390;&#38283;&#22987;</div>
         <div id="roma-display">tap to start</div>
-        <div id="score-board">SCORE: <span id="score">0</span> | <span id="counter">PROGRESS: 0 / 23</span></div>
+        <div id="score-board">SCORE: <span id="score">0</span> / 23</div>
         <button id="start-btn" onclick="startGame()">START</button>
-        <div class="info">※半角英数モードで入力<br>JI / JU / FU / TU / TI / SI / SYE 固定</div>
+
+        <div id="finger-guide">
+            <div id="target-key-label" style="font-weight: bold; color: #e67e22; font-size: 1.2rem; height: 1.5em;"></div>
+            <div class="hands-container">
+                <div class="hand">
+                    <div class="finger pinky" id="f-l-p">小</div>
+                    <div class="finger ring" id="f-l-r">薬</div>
+                    <div class="finger middle" id="f-l-m">中</div>
+                    <div class="finger index" id="f-l-i">人</div>
+                </div>
+                <div class="hand">
+                    <div class="finger index" id="f-r-i">人</div>
+                    <div class="finger middle" id="f-r-m">中</div>
+                    <div class="finger ring" id="f-r-r">薬</div>
+                    <div class="finger pinky" id="f-r-p">小</div>
+                </div>
+            </div>
+            <div style="font-size: 0.7rem; color: #999;">ホームポジションを意識しましょう</div>
+        </div>
+        <div class="info">JI / JU / FU / TU / TI / SI / SYE 固定</div>
     </div>
 
     <input type="text" id="hidden-input" autocomplete="off">
 
     <script>
-        // 一人ずつデータを手動で最適化（変換エラーを防ぐため）
         const originalQuestions = [
-            { k: "ようしょうきんほう", r: "yousyoukinhou" },
-            { k: "じんしの", r: "jinshino" }, // 修正：jiに統一
-            { k: "たかはしかいせ", r: "takahashikaise" },
-            { k: "やまもとゆきの", r: "yamamotoyukino" },
-            { k: "ふるはしまな", r: "furuhasimana" }, // fu
-            { k: "はやししゅうご", r: "hayasisyuugo" }, // si, syuu
-            { k: "なかたにはるか", r: "nakataniharuka" },
-            { k: "おかだつぐみ", r: "okadatugumi" }, // tu
-            { k: "ささきたかまさ", r: "sasakitakamasa" },
-            { k: "さだまさはるか", r: "sadamasaharuka" },
-            { k: "みずのえま", r: "mizunoema" },
-            { k: "おおむろほおり", r: "oomurohoori" },
-            { k: "ごはいよう", r: "gohaiyou" },
-            { k: "しゃへいじゅん", r: "syaheijun" }, // sye, ju
-            { k: "たかしまあらた", r: "takasimaarata" }, // si
-            { k: "ちんいりん", r: "tinirin" }, // ti
-            { k: "わかまつえいと", r: "wakamatueito" },
-            { k: "つかもとあさ", r: "tukamotoasa" }, // tu
-            { k: "しゅうかずまさ", r: "syuukazumasa" }, // syuu
-            { k: "よしだめい", r: "yosidamei" }, // si
-            { k: "どましぇんこにこる", r: "domasyenkonikoru" }, // 修正：sye
-            { k: "かいだみら", r: "kaidamira" },
-            { k: "いしいみつき", r: "isiimituki" } // si, ti
+            { k: "ようしょうきんほう", r: "yousyoukinhou" }, { k: "じんしの", r: "jinshino" }, { k: "たかはしかいせ", r: "takahashikaise" },
+            { k: "やまもとゆきの", r: "yamamotoyukino" }, { k: "ふるはしまな", r: "furuhasimana" }, { k: "はやししゅうご", r: "hayasisyuugo" },
+            { k: "なかたにはるか", r: "nakataniharuka" }, { k: "おかだつぐみ", r: "okadatugumi" }, { k: "ささきたかまさ", r: "sasakitakamasa" },
+            { k: "さだまさはるか", r: "sadamasaharuka" }, { k: "みずのえま", r: "mizunoema" }, { k: "おおむろほおり", r: "oomurohoori" },
+            { k: "ごはいよう", r: "gohaiyou" }, { k: "しゃへいじゅん", r: "syaheijun" }, { k: "たかしまあらた", r: "takasimaarata" },
+            { k: "ちんいりん", r: "tinirin" }, { k: "わかまつえいと", r: "wakamatueito" }, { k: "つかもとあさ", r: "tukamotoasa" },
+            { k: "しゅうかずまさ", r: "syuukazumasa" }, { k: "よしだめい", r: "yosidamei" }, { k: "どましぇんこにこる", r: "domasyenkonikoru" },
+            { k: "かいだみら", r: "kaidamira" }, { k: "いしいみつき", r: "isiimituki" }
         ];
 
-        // ルールを強制適用する関数（一人ずつ丁寧に処理）
+        // 指マッピング (QWERTY)
+        const fingerMap = {
+            'q': 'f-l-p', 'a': 'f-l-p', 'z': 'f-l-p',
+            'w': 'f-l-r', 's': 'f-l-r', 'x': 'f-l-r',
+            'e': 'f-l-m', 'd': 'f-l-m', 'c': 'f-l-m',
+            'r': 'f-l-i', 't': 'f-l-i', 'f': 'f-l-i', 'g': 'f-l-i', 'v': 'f-l-i', 'b': 'f-l-i',
+            'y': 'f-r-i', 'u': 'f-r-i', 'h': 'f-r-i', 'j': 'f-r-i', 'n': 'f-r-i', 'm': 'f-r-i',
+            'i': 'f-r-m', 'k': 'f-r-m',
+            'o': 'f-r-r', 'l': 'f-r-r',
+            'p': 'f-r-p'
+        };
+
         const finalizedQuestions = originalQuestions.map(q => {
-            let roma = q.r
-                .replace(/zi/g, "ji")
-                .replace(/zyu/g, "ju")
-                .replace(/hu/g, "fu")
-                .replace(/tsu/g, "tu")
-                .replace(/chi/g, "ti")
-                .replace(/shi/g, "si");
-            
-            // 表示用の漢字変換（文字化け対策）
-            let kanaHtml = q.k; 
-            return { k: kanaHtml, r: roma, raw: q.k };
+            let roma = q.r.replace(/zi/g, "ji").replace(/zyu/g, "ju").replace(/hu/g, "fu").replace(/tsu/g, "tu").replace(/chi/g, "ti").replace(/shi/g, "si");
+            return { k: q.k, r: roma };
         });
 
-        let shuffledList = [];
-        let currentQ = null;
-        let charIndex = 0;
-        let score = 0;
-        let isStarted = false;
-
-        const kanaElement = document.getElementById("kana-display");
-        const romaElement = document.getElementById("roma-display");
-        const scoreElement = document.getElementById("score");
-        const counterElement = document.getElementById("counter");
-        const inputElement = document.getElementById("hidden-input");
-        const startBtn = document.getElementById("start-btn");
-        const okBadge = document.getElementById("ok-badge");
+        let shuffledList = [], currentQ = null, charIndex = 0, score = 0, isStarted = false;
+        const kanaElement = document.getElementById("kana-display"), romaElement = document.getElementById("roma-display"), scoreElement = document.getElementById("score"), inputElement = document.getElementById("hidden-input"), startBtn = document.getElementById("start-btn"), okBadge = document.getElementById("ok-badge"), targetKeyLabel = document.getElementById("target-key-label");
 
         function shuffle(array) {
             let arr = [...array];
@@ -118,20 +129,14 @@
             nextQuestion();
         }
 
-        function focusInput() {
-            if (isStarted) inputElement.focus();
-        }
+        function focusInput() { if (isStarted) inputElement.focus(); }
 
         function nextQuestion() {
-            if (shuffledList.length === 0) {
-                shuffledList = shuffle(finalizedQuestions);
-            }
+            if (shuffledList.length === 0) shuffledList = shuffle(finalizedQuestions);
             currentQ = shuffledList.pop();
             charIndex = 0;
             updateDisplay();
-            speak(currentQ.raw);
-            const finished = finalizedQuestions.length - shuffledList.length;
-            counterElement.innerText = `PROGRESS: ${finished} / ${finalizedQuestions.length}`;
+            speak(currentQ.k);
             inputElement.value = "";
         }
 
@@ -144,6 +149,22 @@
                 else html += `<span>${currentQ.r[i]}</span>`;
             }
             romaElement.innerHTML = html;
+            updateFingerGuide();
+        }
+
+        function updateFingerGuide() {
+            // 全ての指をリセット
+            document.querySelectorAll('.finger').forEach(f => f.classList.remove('active-finger'));
+            if (!currentQ) return;
+            
+            const targetChar = currentQ.r[charIndex];
+            if (targetChar) {
+                targetKeyLabel.innerText = targetChar.toUpperCase();
+                const fingerId = fingerMap[targetChar];
+                if (fingerId) {
+                    document.getElementById(fingerId).classList.add('active-finger');
+                }
+            }
         }
 
         function showOk() {
