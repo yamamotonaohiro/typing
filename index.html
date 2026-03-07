@@ -3,16 +3,36 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-select=none">
     <meta name="robots" content="noindex,nofollow">
-    <title>Classmate Typing - Finger Guide</title>
+    <title>Classmate Typing - Visual Finger Guide</title>
     <style>
         body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; background: #fdfdfd; color: #333; margin: 0; min-height: 100vh; padding: 10px; box-sizing: border-box; }
         #container { text-align: center; background: white; padding: 20px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 700px; position: relative; margin-bottom: 15px; }
         #kana-display { font-size: 2rem; font-weight: bold; margin-bottom: 5px; color: #2c3e50; }
         #roma-display { font-size: 1.5rem; letter-spacing: 0.1em; color: #95a5a6; min-height: 1.2em; text-transform: lowercase; }
         
-        /* 指ガイドの表示エリア */
-        #finger-guide { font-size: 1.1rem; font-weight: bold; margin-top: 10px; height: 30px; color: #7f8c8d; }
-        .guide-icon { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 8px; }
+        /* 指ナビゲーターのスタイル */
+        #finger-navigator {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin: 20px 0;
+            height: 40px;
+        }
+        .finger-dot {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background-color: #eee;
+            transition: all 0.2s ease;
+            border: 2px solid #ddd;
+        }
+        .finger-dot.active {
+            transform: scale(2.2);
+            border-color: rgba(0,0,0,0.1);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .hand-separator { width: 30px; } /* 左右の手の間の隙間 */
 
         .correct { color: #dcdde1; }
         .cursor { color: #e67e22; border-bottom: 3px solid #e67e22; }
@@ -21,11 +41,11 @@
         .keyboard-row { display: flex; justify-content: flex-start; margin-bottom: 6px; }
         .key-btn { background: #ffffff; border: none; border-radius: 6px; flex: 1; max-width: 45px; height: 45px; margin: 0 2px; display: flex; align-items: center; justify-content: center; font-size: 1rem; font-weight: bold; color: #444; box-shadow: 0 3px 0 #adb1b8; position: relative; }
 
-        /* 指ごとの色分け */
-        .pinky { border-top: 4px solid #ff79c6; }   /* 小指 */
-        .ring  { border-top: 4px solid #8be9fd; }   /* 薬指 */
-        .middle { border-top: 4px solid #50fa7b; }  /* 中指 */
-        .index { border-top: 4px solid #ffb86c; }   /* 人差し指 */
+        /* キーボード上の指色付け */
+        .pinky { border-top: 4px solid #ff79c6; }
+        .ring  { border-top: 4px solid #8be9fd; }
+        .middle { border-top: 4px solid #50fa7b; }
+        .index { border-top: 4px solid #ffb86c; }
 
         .row-1 { padding-left: 0px; }
         .row-2 { padding-left: 15px; }
@@ -38,7 +58,7 @@
         #ok-badge { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0); font-size: 3rem; font-weight: bold; color: #27ae60; background: rgba(255,255,255,0.9); padding: 10px 30px; border-radius: 100px; border: 6px solid #27ae60; z-index: 20; transition: transform 0.2s; }
         #ok-badge.show { transform: translate(-50%, -50%) scale(1); }
         #start-btn { background: #e67e22; color: white; border: none; padding: 12px 30px; border-radius: 50px; font-size: 1.2rem; font-weight: bold; cursor: pointer; margin-top: 15px; }
-        #hidden-input { position: absolute; opacity: 0; }
+        #hidden-input { position: absolute; opacity: 0; pointer-events: none; }
     </style>
 </head>
 <body onclick="focusInput()">
@@ -47,7 +67,19 @@
         <div id="ok-badge">OK!</div>
         <div id="kana-display">タイピング練習</div>
         <div id="roma-display">press START</div>
-        <div id="finger-guide"></div>
+        
+        <div id="finger-navigator">
+            <div class="finger-dot" id="dot-L5" title="左小指"></div>
+            <div class="finger-dot" id="dot-L4" title="左薬指"></div>
+            <div class="finger-dot" id="dot-L3" title="左中指"></div>
+            <div class="finger-dot" id="dot-L2" title="左人差指"></div>
+            <div class="hand-separator"></div>
+            <div class="finger-dot" id="dot-R2" title="右人差指"></div>
+            <div class="finger-dot" id="dot-R3" title="右中指"></div>
+            <div class="finger-dot" id="dot-R4" title="右薬指"></div>
+            <div class="finger-dot" id="dot-R5" title="右小指"></div>
+        </div>
+
         <div id="score-board">SCORE: <span id="score">0</span> / 23</div>
         <button id="start-btn" onclick="startGame()">START</button>
     </div>
@@ -93,22 +125,23 @@
     </div>
 
     <script>
-        const fingerMap = {
-            q:'左小指', a:'左小指', z:'左小指',
-            w:'左薬指', s:'左薬指', x:'左薬指',
-            e:'左中指', d:'左中指', c:'左中指',
-            r:'左人差指', f:'左人差指', v:'左人差指', t:'左人差指', g:'左人差指', b:'左人差指',
-            y:'右人差指', h:'右人差指', n:'右人差指', u:'右人差指', j:'右人差指',
-            i:'右中指', k:'右中指', m:'右中指',
-            o:'右薬指', l:'右薬指',
-            p:'右小指'
+        // 指とドットIDのマッピング
+        const fingerToDot = {
+            'q':'L5', 'a':'L5', 'z':'L5',
+            'w':'L4', 's':'L4', 'x':'L4',
+            'e':'L3', 'd':'L3', 'c':'L3',
+            'r':'L2', 'f':'L2', 'v':'L2', 't':'L2', 'g':'L2', 'b':'L2',
+            'y':'R2', 'h':'R2', 'n':'R2', 'u':'R2', 'j':'R2',
+            'i':'R3', 'k':'R3', 'm':'R3',
+            'o':'R4', 'l':'R4',
+            'p':'R5'
         };
 
         const fingerColors = {
-            '左小指':'#ff79c6', '右小指':'#ff79c6',
-            '左薬指':'#8be9fd', '右薬指':'#8be9fd',
-            '左中指':'#50fa7b', '右中指':'#50fa7b',
-            '左人差指':'#ffb86c', '右人差指':'#ffb86c'
+            'L5':'#ff79c6', 'R5':'#ff79c6',
+            'L4':'#8be9fd', 'R4':'#8be9fd',
+            'L3':'#50fa7b', 'R3':'#50fa7b',
+            'L2':'#ffb86c', 'R2':'#ffb86c'
         };
 
         const originalQuestions = [
@@ -128,8 +161,9 @@
         });
 
         let shuffledList = [], currentQ = null, charIndex = 0, score = 0, isStarted = false;
-        const kanaElement = document.getElementById("kana-display"), romaElement = document.getElementById("roma-display"), scoreElement = document.getElementById("score"), inputElement = document.getElementById("hidden-input"), startBtn = document.getElementById("start-btn"), okBadge = document.getElementById("ok-badge"), guideElement = document.getElementById("finger-guide");
+        const kanaElement = document.getElementById("kana-display"), romaElement = document.getElementById("roma-display"), scoreElement = document.getElementById("score"), inputElement = document.getElementById("hidden-input"), startBtn = document.getElementById("start-btn"), okBadge = document.getElementById("ok-badge");
         const keyButtons = document.querySelectorAll('.key-btn');
+        const fingerDots = document.querySelectorAll('.finger-dot');
 
         function startGame() { isStarted = true; startBtn.style.display = "none"; inputElement.focus(); nextQuestion(); }
         function focusInput() { if (isStarted) inputElement.focus(); }
@@ -156,19 +190,29 @@
                 else html += `<span>${currentQ.r[i]}</span>`;
             }
             romaElement.innerHTML = html;
-            updateGuide();
+            updateVisualAids();
         }
 
-        function updateGuide() {
+        function updateVisualAids() {
+            // キーボードのハイライト解除
             keyButtons.forEach(btn => btn.classList.remove('highlight-key'));
+            // ドットのハイライト解除
+            fingerDots.forEach(dot => {
+                dot.classList.remove('active');
+                dot.style.backgroundColor = '#eee';
+            });
+
             const targetChar = currentQ.r[charIndex];
             const targetBtn = document.querySelector(`.key-btn[data-key="${targetChar}"]`);
             
             if (targetBtn) {
                 targetBtn.classList.add('highlight-key');
-                const fingerName = fingerMap[targetChar];
-                const color = fingerColors[fingerName];
-                guideElement.innerHTML = `<span class="guide-icon" style="background:${color}"></span>次は：${fingerName}`;
+                const dotId = fingerToDot[targetChar];
+                const activeDot = document.getElementById(`dot-${dotId}`);
+                if (activeDot) {
+                    activeDot.classList.add('active');
+                    activeDot.style.backgroundColor = fingerColors[dotId];
+                }
             }
         }
 
