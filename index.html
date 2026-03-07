@@ -22,7 +22,6 @@
             align-items: center;
         }
 
-        /* 指ナビゲーター：丸を指先に配置 */
         #finger-navigator {
             display: flex;
             justify-content: center;
@@ -75,7 +74,6 @@
             position: relative;
         }
         
-        /* 指先に合わせたドットの高さ調整 */
         #dot-L5, #dot-R5 { top: 40px; } 
         #dot-L4, #dot-R4 { top: 23px; } 
         #dot-L3, #dot-R3 { top: 10px; } 
@@ -87,7 +85,6 @@
             box-shadow: 0 0 15px rgba(0,0,0,0.3);
         }
 
-        /* キーボード配置：3列目のオフセットを微調整 */
         .keyboard-row {
             display: flex;
             justify-content: center;
@@ -103,7 +100,6 @@
         .hand-gap { width: 90px; flex-shrink: 0; }
 
         .key-btn { 
-            background: #ffffff; 
             border: none; 
             border-radius: 6px; 
             width: 55px; 
@@ -115,17 +111,27 @@
             font-size: 1.2rem; 
             font-weight: bold; 
             color: #444; 
-            box-shadow: 0 3px 0 #adb1b8; 
+            position: relative; 
             flex-shrink: 0;
+            transition: opacity 0.1s;
         }
 
-        .pinky  { border-top: 4px solid #ff79c6; }
-        .ring   { border-top: 4px solid #8be9fd; }
-        .middle { border-top: 4px solid #50fa7b; }
-        .index  { border-top: 4px solid #ffb86c; }
+        /* --- 修正ポイント：キー全体を色で塗りつぶす --- */
+        /* 背景色をそれぞれの指の色に設定し、影を調整 */
+        .pinky  { background-color: #ffcceb; box-shadow: 0 3px 0 #ff79c6; } /* ピンク系 */
+        .ring   { background-color: #d1f7ff; box-shadow: 0 3px 0 #8be9fd; } /* 水色系 */
+        .middle { background-color: #d4fee0; box-shadow: 0 3px 0 #50fa7b; } /* 緑系 */
+        .index  { background-color: #ffebd1; box-shadow: 0 3px 0 #ffb86c; } /* オレンジ系 */
 
         .home-pos { text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 2px; }
-        .highlight-key { background-color: #444 !important; color: white !important; transform: scale(1.05); box-shadow: 0 0 10px rgba(0,0,0,0.3) !important; }
+        
+        /* ハイライト時はより濃い色にする */
+        .highlight-key { 
+            background-color: #444 !important; 
+            color: white !important; 
+            transform: scale(1.05); 
+            box-shadow: 0 0 10px rgba(0,0,0,0.3) !important; 
+        }
 
         #ok-badge { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0); font-size: 3.5rem; font-weight: bold; color: #27ae60; background: rgba(255,255,255,0.95); padding: 15px 40px; border-radius: 100px; border: 8px solid #27ae60; z-index: 20; transition: transform 0.2s; pointer-events: none; }
         #ok-badge.show { transform: translate(-50%, -50%) scale(1); }
