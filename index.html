@@ -3,7 +3,7 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-select=none">
     <meta name="robots" content="noindex,nofollow">
-    <title>Classmate Typing - Aligned & Offset</title>
+    <title>Classmate Typing - Perfect Alignment Fix</title>
     <style>
         body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; background: #fdfdfd; color: #333; margin: 0; min-height: 100vh; padding: 10px; box-sizing: border-box; }
         #container { text-align: center; background: white; padding: 20px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 700px; position: relative; margin-bottom: 10px; }
@@ -13,9 +13,9 @@
 
         #keyboard-area {
             width: 100%;
-            max-width: 780px;
+            max-width: 800px;
             background: #d1d4d9;
-            padding: 25px;
+            padding: 30px 20px;
             border-radius: 12px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             box-sizing: border-box;
@@ -24,11 +24,11 @@
             align-items: center;
         }
 
-        /* 指ナビゲーター：2列目(ホームポジション)に完全に合わせる */
+        /* 指ナビゲーター：グリッド幅をキー幅(55px)+余白(6px)=61pxに完全固定 */
         #finger-navigator {
             display: flex;
             justify-content: center;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             padding: 12px 0;
             background: rgba(255,255,255,0.25);
             border-radius: 10px;
@@ -39,6 +39,8 @@
             grid-template-columns: repeat(5, 61px); 
             justify-items: center;
         }
+        /* 左手グループをキーボードのA列に合わせるため少し右へシフト */
+        #left-hand { margin-left: 5px; } 
         .hand-separator { width: 40px; }
 
         .finger-dot {
@@ -55,20 +57,13 @@
             box-shadow: 0 0 15px rgba(0,0,0,0.3);
         }
 
-        /* キーボード：行ごとのオフセット調整 */
-        .keyboard-row { 
-            display: flex; 
-            justify-content: center; 
-            margin-bottom: 8px; 
-            width: 100%; 
-        }
+        /* キーボード配置 */
+        .keyboard-row { display: flex; justify-content: center; margin-bottom: 8px; width: 100%; }
         
-        /* 1列目は少し左へ(半キー分) */
-        .row-1 { margin-left: -30px; }
-        /* 2列目(基準)はオフセットなし */
-        .row-2 { margin-left: 0px; }
-        /* 3列目は少し右へ(半キー分) */
-        .row-3 { margin-left: 50px; }
+        /* A列(row-2)をセンター基準にする */
+        .row-1 { margin-left: -32px; } /* Q: Aより左に約半分 */
+        .row-2 { margin-left: 0px; }   /* A: 基準 */
+        .row-3 { margin-left: 30px; }  /* Z: AとSの間にくるよう調整 */
 
         .key-btn { 
             background: #ffffff; 
@@ -116,20 +111,10 @@
     <div id="keyboard-area">
         <div id="finger-navigator">
             <div class="nav-group" id="left-hand">
-                <div class="finger-dot" id="dot-L5"></div>
-                <div class="finger-dot" id="dot-L4"></div>
-                <div class="finger-dot" id="dot-L3"></div>
-                <div class="finger-dot" id="dot-L2"></div>
-                <div></div>
-            </div>
+                <div class="finger-dot" id="dot-L5"></div> <div class="finger-dot" id="dot-L4"></div> <div class="finger-dot" id="dot-L3"></div> <div class="finger-dot" id="dot-L2"></div> <div></div> </div>
             <div class="hand-separator"></div>
             <div class="nav-group" id="right-hand">
-                <div></div>
-                <div class="finger-dot" id="dot-R2"></div>
-                <div class="finger-dot" id="dot-R3"></div>
-                <div class="finger-dot" id="dot-R4"></div>
-                <div class="finger-dot" id="dot-R5"></div>
-            </div>
+                <div></div> <div class="finger-dot" id="dot-R2"></div> <div class="finger-dot" id="dot-R3"></div> <div class="finger-dot" id="dot-R4"></div> <div class="finger-dot" id="dot-R5"></div> </div>
         </div>
 
         <div id="virtual-keyboard">
@@ -157,7 +142,7 @@
                 <div class="key-btn index home-pos" data-key="j">J</div>
                 <div class="key-btn middle" data-key="k">K</div>
                 <div class="key-btn ring" data-key="l">L</div>
-                <div class="key-btn pinky" style="visibility:hidden"></div>
+                <div class="key-btn" style="visibility:hidden"></div>
             </div>
             <div class="keyboard-row row-3">
                 <div class="key-btn pinky" data-key="z">Z</div>
@@ -168,8 +153,8 @@
                 <div class="hand-gap"></div>
                 <div class="key-btn index" data-key="n">N</div>
                 <div class="key-btn middle" data-key="m">M</div>
-                <div class="key-btn ring" style="visibility:hidden"></div>
-                <div class="key-btn pinky" style="visibility:hidden"></div>
+                <div class="key-btn" style="visibility:hidden"></div>
+                <div class="key-btn" style="visibility:hidden"></div>
             </div>
         </div>
     </div>
@@ -177,7 +162,6 @@
     <input type="text" id="hidden-input" autocomplete="off">
 
     <script>
-        // ロジック部分は前回の正常動作版を維持
         const fingerToDot = {
             'q':'L5', 'a':'L5', 'z':'L5',
             'w':'L4', 's':'L4', 'x':'L4',
@@ -188,14 +172,12 @@
             'o':'R4', 'l':'R4',
             'p':'R5'
         };
-
         const fingerColors = {
             'L5':'#ff79c6', 'R5':'#ff79c6',
             'L4':'#8be9fd', 'R4':'#8be9fd',
             'L3':'#50fa7b', 'R3':'#50fa7b',
             'L2':'#ffb86c', 'R2':'#ffb86c'
         };
-
         const originalQuestions = [
             { k: "ようしょうきんほう", r: "yousyoukinhou" }, { k: "じんしの", r: "jinshino" }, { k: "たかはしかいせ", r: "takahashikaise" },
             { k: "やまもとゆきの", r: "yamamotoyukino" }, { k: "ふるはしまな", r: "furuhasimana" }, { k: "はやししゅうご", r: "hayasisyuugo" },
@@ -206,20 +188,16 @@
             { k: "しゅうかずまさ", r: "syuukazumasa" }, { k: "よしだめい", r: "yosidamei" }, { k: "どましぇんこにこる", r: "domasyenkonikoru" },
             { k: "かいだみら", r: "kaidamira" }, { k: "いしいみつき", r: "isiimituki" }
         ];
-
         const finalizedQuestions = originalQuestions.map(q => {
             let roma = q.r.replace(/zi/g, "ji").replace(/zyu/g, "ju").replace(/hu/g, "fu").replace(/tsu/g, "tu").replace(/chi/g, "ti").replace(/shi/g, "si");
             return { k: q.k, r: roma };
         });
-
         let shuffledList = [], currentQ = null, charIndex = 0, score = 0, isStarted = false;
         const kanaElement = document.getElementById("kana-display"), romaElement = document.getElementById("roma-display"), scoreElement = document.getElementById("score"), inputElement = document.getElementById("hidden-input"), startBtn = document.getElementById("start-btn"), okBadge = document.getElementById("ok-badge");
         const keyButtons = document.querySelectorAll('.key-btn');
         const fingerDots = document.querySelectorAll('.finger-dot');
-
         function startGame() { isStarted = true; startBtn.style.display = "none"; inputElement.focus(); nextQuestion(); }
         function focusInput() { if (isStarted) inputElement.focus(); }
-
         function nextQuestion() {
             if (shuffledList.length === 0) shuffledList = [...finalizedQuestions].sort(() => Math.random() - 0.5);
             currentQ = shuffledList.pop();
@@ -232,7 +210,6 @@
                 speechSynthesis.speak(uttr);
             }
         }
-
         function updateDisplay() {
             kanaElement.innerText = currentQ.k;
             let html = "";
@@ -244,7 +221,6 @@
             romaElement.innerHTML = html;
             updateVisualAids();
         }
-
         function updateVisualAids() {
             keyButtons.forEach(btn => btn.classList.remove('highlight-key'));
             fingerDots.forEach(dot => { dot.classList.remove('active'); dot.style.backgroundColor = '#f0f0f0'; });
@@ -258,7 +234,6 @@
                 if (activeDot) { activeDot.classList.add('active'); activeDot.style.backgroundColor = fingerColors[dotId]; }
             }
         }
-
         inputElement.addEventListener("input", () => {
             if (!isStarted || okBadge.classList.contains("show")) { inputElement.value = ""; return; }
             const typed = inputElement.value.toLowerCase();
