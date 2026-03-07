@@ -3,71 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-select=none">
-    <meta name="robots" content="noindex,nofollow">
-    <title>タッチタイピング練習</title>
+    <title>タッチタイピングの練習</title>
     <style>
         body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; background: #fdfdfd; color: #333; margin: 0; min-height: 100vh; padding: 10px; box-sizing: border-box; }
-        #container { text-align: center; background: white; padding: 20px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 700px; position: relative; margin-bottom: 10px; }
-        #kana-display { font-size: 2.2rem; font-weight: bold; margin-bottom: 5px; color: #2c3e50; }
-        #roma-display { font-size: 1.6rem; letter-spacing: 0.1em; color: #95a5a6; min-height: 1.2em; text-transform: lowercase; }
+        #container { text-align: center; background: white; padding: 20px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 700px; position: relative; margin-bottom: 30px; z-index: 10; }
+        #title-display { font-size: 2.2rem; font-weight: bold; margin-bottom: 5px; color: #2c3e50; }
+        #sub-display { font-size: 1.6rem; letter-spacing: 0.1em; color: #95a5a6; min-height: 1.2em; }
+        #roma-display { font-size: 1.6rem; letter-spacing: 0.1em; color: #95a5a6; min-height: 1.2em; text-transform: lowercase; margin-top: 5px; }
         
-        #status-area { display: flex; align-items: center; justify-content: center; gap: 20px; margin-top: 10px; }
+        #course-select { margin-top: 20px; display: flex; gap: 15px; justify-content: center; }
+        .course-btn { background: #3498db; color: white; border: none; padding: 12px 25px; border-radius: 10px; font-size: 1.1rem; cursor: pointer; transition: background 0.2s; font-weight: bold; }
+        .course-btn:hover { background: #2980b9; }
+
+        #status-area { display: none; align-items: center; justify-content: center; gap: 20px; margin-top: 15px; }
         #score-board { font-weight: bold; color: #7f8c8d; }
+        #audio-toggle { background: #ffffff; border: 2px solid #e67e22; border-radius: 50px; padding: 6px 18px; cursor: pointer; font-size: 0.9rem; color: #e67e22; font-weight: bold; }
 
-        #audio-toggle {
-            background: #ffffff; border: 2px solid #e67e22; border-radius: 50px;
-            padding: 6px 18px; cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; gap: 10px;
-            transition: all 0.2s; color: #e67e22; font-weight: bold;
-        }
-        #audio-toggle.audio-off { border-color: #bdc3c7; color: #bdc3c7; }
+        #ok-badge { position: absolute; top: 105%; left: 50%; transform: translateX(-50%) scale(0); font-size: 3rem; font-weight: bold; color: #27ae60; background: white; padding: 10px 40px; border-radius: 100px; border: 6px solid #27ae60; z-index: 100; transition: transform 0.2s, opacity 0.2s; pointer-events: none; box-shadow: 0 5px 15px rgba(0,0,0,0.1); opacity: 0; }
+        #ok-badge.show { transform: translateX(-50%) scale(1.2); opacity: 1; }
 
-        .icon-speaker {
-            width: 12px; height: 12px; background: currentColor; position: relative;
-            margin-right: 4px;
-        }
-        .icon-speaker::before {
-            content: ""; position: absolute; left: 6px; top: -4px;
-            border-top: 10px solid transparent; border-bottom: 10px solid transparent;
-            border-right: 12px solid currentColor;
-        }
-        #audio-toggle.audio-off .icon-speaker::after {
-            content: "×"; position: absolute; left: 18px; top: -3px; font-size: 16px;
+        /* キーボードエリア */
+        #keyboard-area { width: 920px; background: #d1d4d9; padding: 30px 0; border-radius: 12px; display: flex; flex-direction: column; align-items: center; position: relative; }
+        .keyboard-row { display: flex; justify-content: center; width: 100%; margin-bottom: 8px; }
+        
+        .hand-gap { width: 80px; } 
+        .row-1 { transform: translateX(-15px); }
+        .row-2 { transform: translateX(10px); }
+        .row-3 { transform: translateX(35px); }
+
+        .key-btn { border: 2px solid rgba(0,0,0,0.05); border-radius: 6px; width: 55px; height: 55px; margin: 0 3px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: bold; color: #444; position: relative; flex-shrink: 0; box-sizing: border-box; }
+        
+        /* ホームポジション：太枠と下線で目立たせる */
+        .home-pos { 
+            border: 3px solid #555 !important; 
+            text-decoration: underline; 
+            text-decoration-thickness: 3px; 
+            text-underline-offset: 4px; 
+            color: #000; 
         }
 
-        #keyboard-area { width: 820px; background: #d1d4d9; padding: 30px 0; border-radius: 12px; display: flex; flex-direction: column; align-items: center; }
-        #finger-navigator { display: flex; justify-content: center; margin-top: 20px; padding: 10px 0 0 0; background: rgba(255,255,255,0.25); border-radius: 15px; align-items: flex-end; width: fit-content; }
-        .nav-group { display: flex; width: 305px; }
-        .dot-container { width: 61px; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; position: relative; height: 95px; }
-        .finger-shape { position: absolute; bottom: 0; width: 42px; background: rgba(0, 0, 0, 0.08); border-radius: 20px 20px 5px 5px; z-index: 1; }
-        
-        /* 薬指（f-ring）を62pxから72pxへ長くしました */
-        .f-pinky { height: 55px; } .f-ring { height: 72px; } .f-middle { height: 85px; } .f-index { height: 75px; } .f-thumb { height: 45px; } 
-        
-        .hand-separator { width: 90px; } 
-        .finger-dot { width: 18px; height: 18px; border-radius: 50%; transition: all 0.15s ease-out; border: 2px solid rgba(0,0,0,0.1); margin-top: 5px; z-index: 2; position: relative; opacity: 0.7; }
-        
-        /* 薬指ドットの位置を再調整 */
-        #dot-L5, #dot-R5 { top: 40px; background-color: #ff79c6; } 
-        #dot-L4, #dot-R4 { top: 28px; background-color: #8be9fd; } 
-        #dot-L3, #dot-R3 { top: 10px; background-color: #50fa7b; } 
-        #dot-L2, #dot-R2 { top: 20px; background-color: #ffb86c; } 
-        
-        .finger-dot.active { transform: scale(2.4); opacity: 1; border-color: rgba(255,255,255,0.9); box-shadow: 0 0 15px rgba(0,0,0,0.3); }
-        .keyboard-row { display: flex; justify-content: center; width: 100%; margin-bottom: 8px; position: relative; }
-        .row-1 { transform: translateX(-30px); }
-        .row-2 { transform: translateX(0px); }
-        .row-3 { transform: translateX(-15px); } 
-        .hand-gap { width: 90px; flex-shrink: 0; }
-        .key-btn { border: none; border-radius: 6px; width: 55px; height: 55px; margin: 0 3px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: bold; color: #444; position: relative; flex-shrink: 0; }
         .pinky { background-color: #ffcceb; box-shadow: 0 3px 0 #ff79c6; }
         .ring { background-color: #d1f7ff; box-shadow: 0 3px 0 #8be9fd; }
         .middle { background-color: #d4fee0; box-shadow: 0 3px 0 #50fa7b; }
         .index { background-color: #ffebd1; box-shadow: 0 3px 0 #ffb86c; }
-        .home-pos { text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 2px; }
-        .highlight-key { background-color: #444 !important; color: white !important; transform: scale(1.05); box-shadow: 0 0 10px rgba(0,0,0,0.3) !important; }
-        #ok-badge { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0); font-size: 3.5rem; font-weight: bold; color: #27ae60; background: rgba(255,255,255,0.95); padding: 15px 40px; border-radius: 100px; border: 8px solid #27ae60; z-index: 20; transition: transform 0.2s; pointer-events: none; }
-        #ok-badge.show { transform: translate(-50%, -50%) scale(1); }
-        #start-btn { background: #e67e22; color: white; border: none; padding: 15px 40px; border-radius: 50px; font-size: 1.3rem; font-weight: bold; cursor: pointer; margin-top: 15px; }
+        .highlight-key { background-color: #444 !important; color: white !important; transform: scale(1.05); border-color: #000 !important; }
+
+        /* フィンガーナビゲーター：左手の位置を右へ微調整 */
+        #finger-navigator { display: flex; justify-content: center; margin-top: 20px; padding: 10px 0 0 0; background: rgba(255,255,255,0.25); border-radius: 15px; align-items: flex-end; width: fit-content; transform: translateX(12px); }
+        .nav-group { display: flex; width: 305px; }
+        .dot-container { width: 61px; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; position: relative; height: 95px; }
+        .finger-shape { position: absolute; bottom: 0; width: 42px; background: rgba(0, 0, 0, 0.08); border-radius: 20px 20px 5px 5px; z-index: 1; }
+        .f-pinky { height: 55px; } .f-ring { height: 72px; } .f-middle { height: 85px; } .f-index { height: 75px; } .f-thumb { height: 45px; } 
+        .finger-dot { width: 18px; height: 18px; border-radius: 50%; transition: all 0.15s ease-out; border: 2px solid rgba(0,0,0,0.1); margin-top: 5px; z-index: 2; position: relative; opacity: 0.7; }
+        #dot-L5, #dot-R5 { top: 40px; background-color: #ff79c6; } 
+        #dot-L4, #dot-R4 { top: 28px; background-color: #8be9fd; } 
+        #dot-L3, #dot-R3 { top: 10px; background-color: #50fa7b; } 
+        #dot-L2, #dot-R2 { top: 20px; background-color: #ffb86c; } 
+        .finger-dot.active { transform: scale(2.4); opacity: 1; border-color: rgba(255,255,255,0.9); box-shadow: 0 0 15px rgba(0,0,0,0.3); }
+        .hand-separator { width: 115px; } 
         #hidden-input { position: absolute; opacity: 0; pointer-events: none; left: -9999px; }
     </style>
 </head>
@@ -75,59 +68,37 @@
 
     <div id="container">
         <div id="ok-badge">OK!</div>
-        <div id="kana-display">タッチタイピング練習</div>
-        <div id="roma-display">STARTボタンを押してね</div>
-        
+        <div id="title-display">タッチタイピングの練習</div>
+        <div id="sub-display">コースを選んでスタート</div>
+        <div id="roma-display"></div>
+        <div id="course-select">
+            <button class="course-btn" onclick="selectCourse(0)">２年１組</button>
+            <button class="course-btn" onclick="selectCourse(1)">都道府県</button>
+        </div>
         <div id="status-area">
-            <div id="score-board">SCORE: <span id="score">0</span> / 23</div>
+            <div id="score-board">SCORE: <span id="score">0</span></div>
             <button id="audio-toggle" onclick="toggleAudio()">
-                <span class="icon-speaker"></span>
                 <span>読み上げ: <span id="audio-text">ON</span></span>
             </button>
         </div>
-        
-        <button id="start-btn" onclick="startGame()">START</button>
     </div>
 
     <div id="keyboard-area">
         <div id="virtual-keyboard">
             <div class="keyboard-row row-1">
-                <div class="key-btn pinky" data-key="q">Q</div>
-                <div class="key-btn ring" data-key="w">W</div>
-                <div class="key-btn middle" data-key="e">E</div>
-                <div class="key-btn index" data-key="r">R</div>
-                <div class="key-btn index" data-key="t">T</div>
+                <div class="key-btn pinky" data-key="q">Q</div><div class="key-btn ring" data-key="w">W</div><div class="key-btn middle" data-key="e">E</div><div class="key-btn index" data-key="r">R</div><div class="key-btn index" data-key="t">T</div>
                 <div class="hand-gap"></div>
-                <div class="key-btn index" data-key="y">Y</div>
-                <div class="key-btn index" data-key="u">U</div>
-                <div class="key-btn middle" data-key="i">I</div>
-                <div class="key-btn ring" data-key="o">O</div>
-                <div class="key-btn pinky" data-key="p">P</div>
+                <div class="key-btn index" data-key="y">Y</div><div class="key-btn index" data-key="u">U</div><div class="key-btn middle" data-key="i">I</div><div class="key-btn ring" data-key="o">O</div><div class="key-btn pinky" data-key="p">P</div>
             </div>
             <div class="keyboard-row row-2">
-                <div class="key-btn pinky" data-key="a">A</div>
-                <div class="key-btn ring" data-key="s">S</div>
-                <div class="key-btn middle" data-key="d">D</div>
-                <div class="key-btn index home-pos" data-key="f">F</div>
-                <div class="key-btn index" data-key="g">G</div>
+                <div class="key-btn pinky" data-key="a">A</div><div class="key-btn ring" data-key="s">S</div><div class="key-btn middle" data-key="d">D</div><div class="key-btn index home-pos" data-key="f">F</div><div class="key-btn index" data-key="g">G</div>
                 <div class="hand-gap"></div>
-                <div class="key-btn index" data-key="h">H</div>
-                <div class="key-btn index home-pos" data-key="j">J</div>
-                <div class="key-btn middle" data-key="k">K</div>
-                <div class="key-btn ring" data-key="l">L</div>
-                <div class="key-btn" style="visibility:hidden"></div>
+                <div class="key-btn index" data-key="h">H</div><div class="key-btn index home-pos" data-key="j">J</div><div class="key-btn middle" data-key="k">K</div><div class="key-btn ring" data-key="l">L</div><div class="key-btn pinky" style="visibility:hidden"></div>
             </div>
             <div class="keyboard-row row-3">
-                <div class="key-btn pinky" data-key="z">Z</div>
-                <div class="key-btn ring" data-key="x">X</div>
-                <div class="key-btn middle" data-key="c">C</div>
-                <div class="key-btn index" data-key="v">V</div>
-                <div class="key-btn index" data-key="b">B</div>
+                <div class="key-btn pinky" data-key="z">Z</div><div class="key-btn ring" data-key="x">X</div><div class="key-btn middle" data-key="c">C</div><div class="key-btn index" data-key="v">V</div><div class="key-btn index" data-key="b">B</div>
                 <div class="hand-gap"></div>
-                <div class="key-btn index" data-key="n">N</div>
-                <div class="key-btn index" data-key="m">M</div>
-                <div class="key-btn" style="visibility:hidden"></div>
-                <div class="key-btn" style="visibility:hidden"></div>
+                <div class="key-btn index" data-key="n">N</div><div class="key-btn index" data-key="m">M</div><div class="key-btn middle" style="visibility:hidden"></div><div class="key-btn ring" style="visibility:hidden"></div><div class="key-btn pinky" style="visibility:hidden"></div>
             </div>
         </div>
 
@@ -153,67 +124,78 @@
     <input type="text" id="hidden-input" autocomplete="off">
 
     <script>
-        let isAudioEnabled = true;
+        const rawData = [
+            ["いしいみつき", "ほっかいどう"], ["おおむろほおり", "あおもり"], ["おかだつぐみ", "いわて"], ["かいだみら", "みやぎ"],
+            ["ごはいよう", "あきた"], ["ささきたかまさ", "やまがた"], ["さだまさはるか", "ふくしま"], ["しゃへいじゅん", "いばらき"],
+            ["しゅうかずまさ", "とちぎ"], ["じんしの", "ぐんま"], ["たかしまあらた", "さいたま"], ["たかはしかいせ", "ちば"],
+            ["ちんいりん", "とうきょう"], ["つかもとあさ", "かながわ"], ["どましぇんこにこる", "にいがた"], ["なかたにはるか", "とやま"],
+            ["はやししゅうご", "いしかわ"], ["ふるはしまな", "ふくい"], ["ほんじょうまいこ", "やまなし"], ["みずのえま", "ながの"],
+            ["やまもとゆきの", "ぎふ"], ["ようしょうきんほう", "しずおか"], ["よしだめい", "あいち"], ["わかまつえいと", "みえ"],
+            ["のろのりこ", "しが"]
+        ];
 
-        function toggleAudio() {
-            isAudioEnabled = !isAudioEnabled;
-            const btn = document.getElementById("audio-toggle");
-            const text = document.getElementById("audio-text");
-            
+        const kanaMap = {
+            'あ':'a','い':'i','う':'u','え':'e','お':'o','か':'ka','き':'ki','く':'ku','け':'ke','こ':'ko',
+            'さ':'sa','し':'si','す':'su','せ':'se','そ':'so','た':'ta','ち':'ti','つ':'tu','て':'te','と':'to',
+            'な':'na','に':'ni','ぬ':'nu','ね':'ne','の':'no','は':'ha','ひ':'hi','ふ':'hu','へ':'he','ほ':'ho',
+            'ま':'ma','み':'mi','む':'mu','め':'me','も':'mo','や':'ya','ゆ':'yu','よ':'yo','ら':'ra','り':'ri',
+            'る':'ru','れ':'re','ろ':'ro','わ':'wa','を':'wo','が':'ga','ぎ':'gi','ぐ':'gu','げ':'ge','ご':'go',
+            'ざ':'za','じ':'zi','ず':'zu','ぜ':'ze','ぞ':'zo','だ':'da','ぢ':'zi','づ':'zu','で':'de','ど':'do',
+            'ば':'ba','び':'bi','ぶ':'bu','べ':'be','ぼ':'bo','ぱ':'pa','ぴ':'pi','ぷ':'pu','ぺ':'pe','ぽ':'po',
+            'きゃ':'kya','きゅ':'kyu','きょ':'kyo','しゃ':'sya','しゅ':'syu','しょ':'syo','ちゃ':'tya','ちゅ':'tyu','ちょ':'tyo',
+            'にゃ':'nya','にゅ':'nyu','にょ':'nyo','ひゃ':'hya','ひゅ':'hyu','ひょ':'hyo','みゃ':'mya','みゅ':'myu','みょ':'myo',
+            'りゃ':'rya','りゅ':'ryu','りょ':'ryo','ぎゃ':'gya','ぎゅ':'gyu','ぎょ':'gyo','じゃ':'zya','じゅ':'zyu','じょ':'zyo',
+            'びゃ':'bya','びゅ':'byu','びょ':'byo','ぴゃ':'pya','ぴゅ':'pyu','ぴょ':'pyo',
+            'しぇ':'sye','じぇ':'zye','ちぇ':'tye','ふぇ':'he','ふぉ':'ho','てぃ':'ti','てゅ':'tyu','うぃ':'wi','うぇ':'we','ん':'n' 
+        };
+
+        function toRoma(kana) {
+            let roma = "";
+            for(let i=0; i<kana.length; i++) {
+                let char = kana[i];
+                let nextChar = kana[i+1] || "";
+                if(char === 'っ') {
+                    let nextRoma = toRoma(nextChar);
+                    if(nextRoma) roma += nextRoma[0]; 
+                    continue;
+                }
+                if(nextChar && kanaMap[char + nextChar]) {
+                    roma += kanaMap[char + nextChar]; i++;
+                } else if(kanaMap[char]) {
+                    if(char === 'ん') {
+                        if(nextChar && "あいうえおやゆよなぬねの".includes(nextChar)) roma += "nn";
+                        else roma += "n";
+                    } else { roma += kanaMap[char]; }
+                } else { roma += char; }
+            }
+            return roma;
+        }
+
+        let isAudioEnabled = true, shuffledList = [], currentQ = null, charIndex = 0, score = 0, isStarted = false;
+        const subDisplay = document.getElementById("sub-display"), romaElement = document.getElementById("roma-display"), scoreElement = document.getElementById("score"), inputElement = document.getElementById("hidden-input"), okBadge = document.getElementById("ok-badge");
+        const fingerToDot = {'q':'L5','a':'L5','z':'L5','w':'L4','s':'L4','x':'L4','e':'L3','d':'L3','c':'L3','r':'L2','f':'L2','v':'L2','t':'L2','g':'L2','b':'L2','y':'R2','h':'R2','n':'R2','u':'R2','j':'R2','m':'R2','i':'R3','k':'R3','o':'R4','l':'R4','p':'R5'};
+
+        function selectCourse(colIndex) {
+            shuffledList = rawData.map(d => ({ k: d[colIndex], r: toRoma(d[colIndex]) })).sort(() => Math.random() - 0.5);
+            document.getElementById("course-select").style.display = "none";
+            document.getElementById("status-area").style.display = "flex";
+            isStarted = true; nextQuestion();
+        }
+
+        function nextQuestion() {
+            if (shuffledList.length === 0) return alert("お疲れ様でした！");
+            currentQ = shuffledList.pop(); charIndex = 0; updateDisplay();
             if (isAudioEnabled) {
-                btn.classList.remove("audio-off");
-                text.innerText = "ON";
-            } else {
-                btn.classList.add("audio-off");
-                text.innerText = "OFF";
-                if (window.speechSynthesis) speechSynthesis.cancel();
+                speechSynthesis.cancel();
+                let uttr = new SpeechSynthesisUtterance(currentQ.k);
+                uttr.lang = 'ja-JP'; speechSynthesis.speak(uttr);
             }
             inputElement.focus();
         }
 
-        const fingerToDot = {
-            'q':'L5', 'a':'L5', 'z':'L5',
-            'w':'L4', 's':'L4', 'x':'L4',
-            'e':'L3', 'd':'L3', 'c':'L3',
-            'r':'L2', 'f':'L2', 'v':'L2', 't':'L2', 'g':'L2', 'b':'L2',
-            'y':'R2', 'h':'R2', 'n':'R2', 'u':'R2', 'j':'R2', 'm':'R2',
-            'i':'R3', 'k':'R3', 'o':'R4', 'l':'R4', 'p':'R5'
-        };
-        const originalQuestions = [
-            { k: "ようしょうきんほう", r: "yousyoukinhou" }, { k: "じんしの", r: "jinshino" }, { k: "たakahashikaise", r: "takahashikaise" },
-            { k: "やまもとゆきの", r: "yamamotoyukino" }, { k: "ふるはしまな", r: "furuhasimana" }, { k: "はやししゅうご", r: "hayasisyuugo" },
-            { k: "なかたにはるか", r: "nakataniharuka" }, { k: "おかだつぐみ", r: "okadatugumi" }, { k: "ささきたかまさ", r: "sasakitakamasa" },
-            { k: "さだまさはるか", r: "sadamasaharuka" }, { k: "みずのえま", r: "mizunoema" }, { k: "おおむろほおり", r: "oomurohoori" },
-            { k: "ごはいよう", r: "gohaiyou" }, { k: "しゃへいじゅん", r: "syaheijun" }, { k: "たかしまあらた", r: "takasimaarata" },
-            { k: "ちんいりん", r: "tinirin" }, { k: "わかまつえいと", r: "wakamatueito" }, { k: "つかもとあさ", r: "tukamotoasa" },
-            { k: "しゅうかずまさ", r: "syuukazumasa" }, { k: "よしだめい", r: "yosidamei" }, { k: "どましぇんこにこる", r: "domasyenkonikoru" },
-            { k: "かいだみら", r: "kaidamira" }, { k: "いしいみつき", r: "isiimituki" }
-        ];
-        const finalizedQuestions = originalQuestions.map(q => {
-            let roma = q.r.replace(/zi/g, "ji").replace(/zyu/g, "ju").replace(/hu/g, "fu").replace(/tsu/g, "tu").replace(/chi/g, "ti").replace(/shi/g, "si");
-            return { k: q.k, r: roma };
-        });
-        let shuffledList = [], currentQ = null, charIndex = 0, score = 0, isStarted = false;
-        const kanaElement = document.getElementById("kana-display"), romaElement = document.getElementById("roma-display"), scoreElement = document.getElementById("score"), inputElement = document.getElementById("hidden-input"), startBtn = document.getElementById("start-btn"), okBadge = document.getElementById("ok-badge");
-        const keyButtons = document.querySelectorAll('.key-btn');
-        const fingerDots = document.querySelectorAll('.finger-dot');
-        
-        function startGame() { isStarted = true; startBtn.style.display = "none"; inputElement.focus(); nextQuestion(); }
-        function focusInput() { if (isStarted) inputElement.focus(); }
-        function nextQuestion() {
-            if (shuffledList.length === 0) shuffledList = [...finalizedQuestions].sort(() => Math.random() - 0.5);
-            currentQ = shuffledList.pop();
-            charIndex = 0;
-            updateDisplay();
-            if (isAudioEnabled && window.speechSynthesis) {
-                speechSynthesis.cancel();
-                const uttr = new SpeechSynthesisUtterance(currentQ.k);
-                uttr.lang = 'ja-JP';
-                speechSynthesis.speak(uttr);
-            }
-        }
         function updateDisplay() {
-            kanaElement.innerText = currentQ.k;
+            subDisplay.innerText = currentQ.k;
+            subDisplay.style.color = "#2c3e50"; subDisplay.style.fontWeight = "bold";
             let html = "";
             for (let i = 0; i < currentQ.r.length; i++) {
                 if (i < charIndex) html += `<span style="color:#dcdde1">${currentQ.r[i]}</span>`;
@@ -223,34 +205,38 @@
             romaElement.innerHTML = html;
             updateVisualAids();
         }
+
         function updateVisualAids() {
-            keyButtons.forEach(btn => btn.classList.remove('highlight-key'));
-            fingerDots.forEach(dot => dot.classList.remove('active'));
-            if(!currentQ || charIndex >= currentQ.r.length) return;
+            document.querySelectorAll('.key-btn').forEach(b => b.classList.remove('highlight-key'));
+            document.querySelectorAll('.finger-dot').forEach(d => d.classList.remove('active'));
             const targetChar = currentQ.r[charIndex];
             const targetBtn = document.querySelector(`.key-btn[data-key="${targetChar}"]`);
             if (targetBtn) {
                 targetBtn.classList.add('highlight-key');
-                const dotId = fingerToDot[targetChar];
-                const activeDot = document.getElementById(`dot-${dotId}`);
+                const activeDot = document.getElementById(`dot-${fingerToDot[targetChar]}`);
                 if (activeDot) activeDot.classList.add('active');
             }
         }
+
         inputElement.addEventListener("input", () => {
-            if (!isStarted || okBadge.classList.contains("show")) { inputElement.value = ""; return; }
+            if (!isStarted) return;
             const typed = inputElement.value.toLowerCase();
-            const target = currentQ.r[charIndex];
-            if (typed.includes(target)) {
-                charIndex++;
-                updateDisplay();
-                if (charIndex === currentQ.r.length) {
-                    score++; scoreElement.innerText = score;
-                    okBadge.classList.add("show");
-                    setTimeout(() => { okBadge.classList.remove("show"); nextQuestion(); }, 600);
+            if (typed.length > 0) {
+                const inputChar = typed[typed.length - 1];
+                if (inputChar === currentQ.r[charIndex]) {
+                    charIndex++; updateDisplay();
+                    if (charIndex === currentQ.r.length) {
+                        score++; scoreElement.innerText = score;
+                        okBadge.classList.add("show");
+                        setTimeout(() => { okBadge.classList.remove("show"); nextQuestion(); }, 600);
+                    }
                 }
             }
             inputElement.value = "";
         });
+
+        function focusInput() { if (isStarted) inputElement.focus(); }
+        function toggleAudio() { isAudioEnabled = !isAudioEnabled; document.getElementById("audio-text").innerText = isAudioEnabled ? "ON" : "OFF"; }
     </script>
 </body>
 </html>
