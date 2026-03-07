@@ -3,74 +3,104 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-select=none">
     <meta name="robots" content="noindex,nofollow">
-    <title>Classmate Typing - Integrated Guide</title>
+    <title>Classmate Typing - Aligned & Offset</title>
     <style>
         body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; background: #fdfdfd; color: #333; margin: 0; min-height: 100vh; padding: 10px; box-sizing: border-box; }
         #container { text-align: center; background: white; padding: 20px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 700px; position: relative; margin-bottom: 10px; }
         #kana-display { font-size: 2.2rem; font-weight: bold; margin-bottom: 5px; color: #2c3e50; }
         #roma-display { font-size: 1.6rem; letter-spacing: 0.1em; color: #95a5a6; min-height: 1.2em; text-transform: lowercase; }
-        
-        /* スコアエリア */
         #score-board { margin-top: 10px; font-weight: bold; color: #7f8c8d; }
 
-        /* キーボードとナビゲーターをまとめるエリア */
         #keyboard-area {
             width: 100%;
-            max-width: 700px;
+            max-width: 780px;
             background: #d1d4d9;
-            padding: 15px 12px;
+            padding: 25px;
             border-radius: 12px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
-        /* 指ナビゲーターのスタイル（キーボード直上） */
+        /* 指ナビゲーター：2列目(ホームポジション)に完全に合わせる */
         #finger-navigator {
             display: flex;
             justify-content: center;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 20px; /* キーボードとの間隔 */
-            padding: 10px;
-            background: rgba(255,255,255,0.3);
-            border-radius: 8px;
+            margin-bottom: 20px;
+            padding: 12px 0;
+            background: rgba(255,255,255,0.25);
+            border-radius: 10px;
+            width: fit-content;
         }
+        .nav-group {
+            display: grid;
+            grid-template-columns: repeat(5, 61px); 
+            justify-items: center;
+        }
+        .hand-separator { width: 40px; }
+
         .finger-dot {
-            width: 14px;
-            height: 14px;
+            width: 18px;
+            height: 18px;
             border-radius: 50%;
             background-color: #f0f0f0;
             transition: all 0.15s ease-out;
             border: 2px solid #bbb;
         }
         .finger-dot.active {
-            transform: scale(2.5);
-            border-color: rgba(255,255,255,0.8);
-            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            transform: scale(2.4);
+            border-color: rgba(255,255,255,0.9);
+            box-shadow: 0 0 15px rgba(0,0,0,0.3);
         }
-        .hand-separator { width: 40px; }
 
-        /* キーボードスタイル */
-        .keyboard-row { display: flex; justify-content: flex-start; margin-bottom: 6px; }
-        .key-btn { background: #ffffff; border: none; border-radius: 6px; flex: 1; max-width: 45px; height: 45px; margin: 0 2px; display: flex; align-items: center; justify-content: center; font-size: 1rem; font-weight: bold; color: #444; box-shadow: 0 3px 0 #adb1b8; position: relative; }
+        /* キーボード：行ごとのオフセット調整 */
+        .keyboard-row { 
+            display: flex; 
+            justify-content: center; 
+            margin-bottom: 8px; 
+            width: 100%; 
+        }
+        
+        /* 1列目は少し左へ(半キー分) */
+        .row-1 { margin-left: -30px; }
+        /* 2列目(基準)はオフセットなし */
+        .row-2 { margin-left: 0px; }
+        /* 3列目は少し右へ(半キー分) */
+        .row-3 { margin-left: 50px; }
 
-        /* キーの色分け */
+        .key-btn { 
+            background: #ffffff; 
+            border: none; 
+            border-radius: 6px; 
+            width: 55px; 
+            height: 55px; 
+            margin: 0 3px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 1.2rem; 
+            font-weight: bold; 
+            color: #444; 
+            box-shadow: 0 3px 0 #adb1b8; 
+            position: relative; 
+            flex-shrink: 0;
+        }
+
         .pinky { border-top: 4px solid #ff79c6; }
         .ring  { border-top: 4px solid #8be9fd; }
         .middle { border-top: 4px solid #50fa7b; }
         .index { border-top: 4px solid #ffb86c; }
 
-        .row-1 { padding-left: 0px; }
-        .row-2 { padding-left: 15px; }
-        .row-3 { padding-left: 40px; }
-        .hand-gap { width: 35px; flex-shrink: 0; }
-
+        .hand-gap { width: 40px; flex-shrink: 0; }
         .home-pos { text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 2px; }
         .highlight-key { background-color: #444 !important; color: white !important; transform: scale(1.05); box-shadow: 0 0 10px rgba(0,0,0,0.3) !important; }
 
         #ok-badge { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0); font-size: 3.5rem; font-weight: bold; color: #27ae60; background: rgba(255,255,255,0.95); padding: 15px 40px; border-radius: 100px; border: 8px solid #27ae60; z-index: 20; transition: transform 0.2s; pointer-events: none; }
         #ok-badge.show { transform: translate(-50%, -50%) scale(1); }
         #start-btn { background: #e67e22; color: white; border: none; padding: 15px 40px; border-radius: 50px; font-size: 1.3rem; font-weight: bold; cursor: pointer; margin-top: 15px; }
-        #hidden-input { position: absolute; opacity: 0; pointer-events: none; }
+        #hidden-input { position: absolute; opacity: 0; pointer-events: none; left: -9999px; }
     </style>
 </head>
 <body onclick="focusInput()">
@@ -78,22 +108,28 @@
     <div id="container">
         <div id="ok-badge">OK!</div>
         <div id="kana-display">タイピング練習</div>
-        <div id="roma-display">press START</div>
+        <div id="roma-display">STARTボタンを押してね</div>
         <div id="score-board">SCORE: <span id="score">0</span> / 23</div>
         <button id="start-btn" onclick="startGame()">START</button>
     </div>
 
     <div id="keyboard-area">
         <div id="finger-navigator">
-            <div class="finger-dot" id="dot-L5"></div>
-            <div class="finger-dot" id="dot-L4"></div>
-            <div class="finger-dot" id="dot-L3"></div>
-            <div class="finger-dot" id="dot-L2"></div>
+            <div class="nav-group" id="left-hand">
+                <div class="finger-dot" id="dot-L5"></div>
+                <div class="finger-dot" id="dot-L4"></div>
+                <div class="finger-dot" id="dot-L3"></div>
+                <div class="finger-dot" id="dot-L2"></div>
+                <div></div>
+            </div>
             <div class="hand-separator"></div>
-            <div class="finger-dot" id="dot-R2"></div>
-            <div class="finger-dot" id="dot-R3"></div>
-            <div class="finger-dot" id="dot-R4"></div>
-            <div class="finger-dot" id="dot-R5"></div>
+            <div class="nav-group" id="right-hand">
+                <div></div>
+                <div class="finger-dot" id="dot-R2"></div>
+                <div class="finger-dot" id="dot-R3"></div>
+                <div class="finger-dot" id="dot-R4"></div>
+                <div class="finger-dot" id="dot-R5"></div>
+            </div>
         </div>
 
         <div id="virtual-keyboard">
@@ -121,6 +157,7 @@
                 <div class="key-btn index home-pos" data-key="j">J</div>
                 <div class="key-btn middle" data-key="k">K</div>
                 <div class="key-btn ring" data-key="l">L</div>
+                <div class="key-btn pinky" style="visibility:hidden"></div>
             </div>
             <div class="keyboard-row row-3">
                 <div class="key-btn pinky" data-key="z">Z</div>
@@ -131,6 +168,8 @@
                 <div class="hand-gap"></div>
                 <div class="key-btn index" data-key="n">N</div>
                 <div class="key-btn middle" data-key="m">M</div>
+                <div class="key-btn ring" style="visibility:hidden"></div>
+                <div class="key-btn pinky" style="visibility:hidden"></div>
             </div>
         </div>
     </div>
@@ -138,7 +177,7 @@
     <input type="text" id="hidden-input" autocomplete="off">
 
     <script>
-        // 指とドットIDのマッピング
+        // ロジック部分は前回の正常動作版を維持
         const fingerToDot = {
             'q':'L5', 'a':'L5', 'z':'L5',
             'w':'L4', 's':'L4', 'x':'L4',
@@ -198,8 +237,8 @@
             kanaElement.innerText = currentQ.k;
             let html = "";
             for (let i = 0; i < currentQ.r.length; i++) {
-                if (i < charIndex) html += `<span class="correct">${currentQ.r[i]}</span>`;
-                else if (i === charIndex) html += `<span class="cursor">${currentQ.r[i]}</span>`;
+                if (i < charIndex) html += `<span style="color:#dcdde1">${currentQ.r[i]}</span>`;
+                else if (i === charIndex) html += `<span style="color:#e67e22; border-bottom:3px solid #e67e22">${currentQ.r[i]}</span>`;
                 else html += `<span>${currentQ.r[i]}</span>`;
             }
             romaElement.innerHTML = html;
@@ -208,38 +247,29 @@
 
         function updateVisualAids() {
             keyButtons.forEach(btn => btn.classList.remove('highlight-key'));
-            fingerDots.forEach(dot => {
-                dot.classList.remove('active');
-                dot.style.backgroundColor = '#f0f0f0';
-            });
-
+            fingerDots.forEach(dot => { dot.classList.remove('active'); dot.style.backgroundColor = '#f0f0f0'; });
+            if(!currentQ || charIndex >= currentQ.r.length) return;
             const targetChar = currentQ.r[charIndex];
             const targetBtn = document.querySelector(`.key-btn[data-key="${targetChar}"]`);
-            
             if (targetBtn) {
                 targetBtn.classList.add('highlight-key');
                 const dotId = fingerToDot[targetChar];
                 const activeDot = document.getElementById(`dot-${dotId}`);
-                if (activeDot) {
-                    activeDot.classList.add('active');
-                    activeDot.style.backgroundColor = fingerColors[dotId];
-                }
+                if (activeDot) { activeDot.classList.add('active'); activeDot.style.backgroundColor = fingerColors[dotId]; }
             }
         }
 
-        inputElement.addEventListener("input", (e) => {
-            if (!isStarted || okBadge.classList.contains("show")) return;
-            const val = inputElement.value.toLowerCase();
-            const targetChar = currentQ.r[charIndex];
-            if (val.endsWith(targetChar)) {
+        inputElement.addEventListener("input", () => {
+            if (!isStarted || okBadge.classList.contains("show")) { inputElement.value = ""; return; }
+            const typed = inputElement.value.toLowerCase();
+            const target = currentQ.r[charIndex];
+            if (typed.includes(target)) {
                 charIndex++;
+                updateDisplay();
                 if (charIndex === currentQ.r.length) {
-                    score++;
-                    scoreElement.innerText = score;
+                    score++; scoreElement.innerText = score;
                     okBadge.classList.add("show");
                     setTimeout(() => { okBadge.classList.remove("show"); nextQuestion(); }, 600);
-                } else {
-                    updateDisplay();
                 }
             }
             inputElement.value = "";
