@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-select=none">
     <meta name="robots" content="noindex,nofollow">
     <title>タッチタイピング練習</title>
     <style>
-        /* 前略（既存のスタイルを維持） */
         body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; background: #fdfdfd; color: #333; margin: 0; min-height: 100vh; padding: 10px; box-sizing: border-box; }
         #container { text-align: center; background: white; padding: 20px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 700px; position: relative; margin-bottom: 10px; }
         #kana-display { font-size: 2.2rem; font-weight: bold; margin-bottom: 5px; color: #2c3e50; }
@@ -14,7 +14,6 @@
         #status-area { display: flex; align-items: center; justify-content: center; gap: 20px; margin-top: 10px; }
         #score-board { font-weight: bold; color: #7f8c8d; }
 
-        /* --- 修正ポイント：CSSでスピーカーアイコンを作成 --- */
         #audio-toggle {
             background: #ffffff; border: 2px solid #e67e22; border-radius: 50px;
             padding: 6px 18px; cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; gap: 10px;
@@ -22,7 +21,6 @@
         }
         #audio-toggle.audio-off { border-color: #bdc3c7; color: #bdc3c7; }
 
-        /* スピーカーアイコンの自作 */
         .icon-speaker {
             width: 12px; height: 12px; background: currentColor; position: relative;
             margin-right: 4px;
@@ -32,12 +30,10 @@
             border-top: 10px solid transparent; border-bottom: 10px solid transparent;
             border-right: 12px solid currentColor;
         }
-        /* 消音時のバツ印 */
         #audio-toggle.audio-off .icon-speaker::after {
             content: "×"; position: absolute; left: 18px; top: -3px; font-size: 16px;
         }
 
-        /* 以下、キーボードとナビゲーターのスタイル（前回同様） */
         #keyboard-area { width: 820px; background: #d1d4d9; padding: 30px 0; border-radius: 12px; display: flex; flex-direction: column; align-items: center; }
         #finger-navigator { display: flex; justify-content: center; margin-top: 20px; padding: 10px 0 0 0; background: rgba(255,255,255,0.25); border-radius: 15px; align-items: flex-end; width: fit-content; }
         .nav-group { display: flex; width: 305px; }
@@ -46,10 +42,13 @@
         .f-pinky { height: 55px; } .f-ring { height: 62px; } .f-middle { height: 85px; } .f-index { height: 75px; } .f-thumb { height: 45px; } 
         .hand-separator { width: 90px; } 
         .finger-dot { width: 18px; height: 18px; border-radius: 50%; transition: all 0.15s ease-out; border: 2px solid rgba(0,0,0,0.1); margin-top: 5px; z-index: 2; position: relative; opacity: 0.7; }
+        
+        /* 修正箇所: 薬指ドットの位置を23pxから33pxに下げました */
         #dot-L5, #dot-R5 { top: 40px; background-color: #ff79c6; } 
-        #dot-L4, #dot-R4 { top: 23px; background-color: #8be9fd; } 
+        #dot-L4, #dot-R4 { top: 33px; background-color: #8be9fd; } 
         #dot-L3, #dot-R3 { top: 10px; background-color: #50fa7b; } 
         #dot-L2, #dot-R2 { top: 20px; background-color: #ffb86c; } 
+        
         .finger-dot.active { transform: scale(2.4); opacity: 1; border-color: rgba(255,255,255,0.9); box-shadow: 0 0 15px rgba(0,0,0,0.3); }
         .keyboard-row { display: flex; justify-content: center; width: 100%; margin-bottom: 8px; position: relative; }
         .row-1 { transform: translateX(-30px); }
@@ -169,7 +168,6 @@
             inputElement.focus();
         }
 
-        // 以下、ロジック部分は前回と同様
         const fingerToDot = {
             'q':'L5', 'a':'L5', 'z':'L5',
             'w':'L4', 's':'L4', 'x':'L4',
@@ -196,6 +194,7 @@
         const kanaElement = document.getElementById("kana-display"), romaElement = document.getElementById("roma-display"), scoreElement = document.getElementById("score"), inputElement = document.getElementById("hidden-input"), startBtn = document.getElementById("start-btn"), okBadge = document.getElementById("ok-badge");
         const keyButtons = document.querySelectorAll('.key-btn');
         const fingerDots = document.querySelectorAll('.finger-dot');
+        
         function startGame() { isStarted = true; startBtn.style.display = "none"; inputElement.focus(); nextQuestion(); }
         function focusInput() { if (isStarted) inputElement.focus(); }
         function nextQuestion() {
