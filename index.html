@@ -5,131 +5,64 @@
     <meta name="robots" content="noindex,nofollow">
     <title>タッチタイピング練習</title>
     <style>
+        /* 前略（既存のスタイルを維持） */
         body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; background: #fdfdfd; color: #333; margin: 0; min-height: 100vh; padding: 10px; box-sizing: border-box; }
         #container { text-align: center; background: white; padding: 20px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 700px; position: relative; margin-bottom: 10px; }
         #kana-display { font-size: 2.2rem; font-weight: bold; margin-bottom: 5px; color: #2c3e50; }
         #roma-display { font-size: 1.6rem; letter-spacing: 0.1em; color: #95a5a6; min-height: 1.2em; text-transform: lowercase; }
-        #score-board { margin-top: 10px; font-weight: bold; color: #7f8c8d; }
-
-        #keyboard-area {
-            width: 820px; 
-            background: #d1d4d9;
-            padding: 30px 0;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        #finger-navigator {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 25px;
-            padding: 20px 0 0 0;
-            background: rgba(255,255,255,0.25);
-            border-radius: 15px;
-            align-items: flex-end;
-            width: fit-content;
-        }
-        .nav-group {
-            display: flex;
-            width: 305px; 
-        }
-        .dot-container {
-            width: 61px;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-            align-items: center;
-            position: relative;
-            height: 95px;
-        }
         
-        .finger-shape {
-            position: absolute;
-            bottom: 0;
-            width: 42px;
-            background: rgba(0, 0, 0, 0.08);
-            border-radius: 20px 20px 5px 5px;
-            z-index: 1;
-        }
-        .f-pinky  { height: 55px; }
-        .f-ring   { height: 72px; }
-        .f-middle { height: 85px; }
-        .f-index  { height: 75px; }
-        .f-thumb  { height: 45px; } 
+        #status-area { display: flex; align-items: center; justify-content: center; gap: 20px; margin-top: 10px; }
+        #score-board { font-weight: bold; color: #7f8c8d; }
 
+        /* --- 修正ポイント：CSSでスピーカーアイコンを作成 --- */
+        #audio-toggle {
+            background: #ffffff; border: 2px solid #e67e22; border-radius: 50px;
+            padding: 6px 18px; cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; gap: 10px;
+            transition: all 0.2s; color: #e67e22; font-weight: bold;
+        }
+        #audio-toggle.audio-off { border-color: #bdc3c7; color: #bdc3c7; }
+
+        /* スピーカーアイコンの自作 */
+        .icon-speaker {
+            width: 12px; height: 12px; background: currentColor; position: relative;
+            margin-right: 4px;
+        }
+        .icon-speaker::before {
+            content: ""; position: absolute; left: 6px; top: -4px;
+            border-top: 10px solid transparent; border-bottom: 10px solid transparent;
+            border-right: 12px solid currentColor;
+        }
+        /* 消音時のバツ印 */
+        #audio-toggle.audio-off .icon-speaker::after {
+            content: "×"; position: absolute; left: 18px; top: -3px; font-size: 16px;
+        }
+
+        /* 以下、キーボードとナビゲーターのスタイル（前回同様） */
+        #keyboard-area { width: 820px; background: #d1d4d9; padding: 30px 0; border-radius: 12px; display: flex; flex-direction: column; align-items: center; }
+        #finger-navigator { display: flex; justify-content: center; margin-top: 20px; padding: 10px 0 0 0; background: rgba(255,255,255,0.25); border-radius: 15px; align-items: flex-end; width: fit-content; }
+        .nav-group { display: flex; width: 305px; }
+        .dot-container { width: 61px; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; position: relative; height: 95px; }
+        .finger-shape { position: absolute; bottom: 0; width: 42px; background: rgba(0, 0, 0, 0.08); border-radius: 20px 20px 5px 5px; z-index: 1; }
+        .f-pinky { height: 55px; } .f-ring { height: 62px; } .f-middle { height: 85px; } .f-index { height: 75px; } .f-thumb { height: 45px; } 
         .hand-separator { width: 90px; } 
-
-        .finger-dot {
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            background-color: #f0f0f0;
-            transition: all 0.15s ease-out;
-            border: 2px solid #bbb;
-            margin-top: 5px;
-            z-index: 2;
-            position: relative;
-        }
-        
-        #dot-L5, #dot-R5 { top: 40px; } 
-        #dot-L4, #dot-R4 { top: 23px; } 
-        #dot-L3, #dot-R3 { top: 10px; } 
-        #dot-L2, #dot-R2 { top: 20px; } 
-
-        .finger-dot.active {
-            transform: scale(2.4);
-            border-color: rgba(255,255,255,0.9);
-            box-shadow: 0 0 15px rgba(0,0,0,0.3);
-        }
-
-        .keyboard-row {
-            display: flex;
-            justify-content: center;
-            width: 100%;
-            margin-bottom: 8px;
-            position: relative;
-        }
-
+        .finger-dot { width: 18px; height: 18px; border-radius: 50%; transition: all 0.15s ease-out; border: 2px solid rgba(0,0,0,0.1); margin-top: 5px; z-index: 2; position: relative; opacity: 0.7; }
+        #dot-L5, #dot-R5 { top: 40px; background-color: #ff79c6; } 
+        #dot-L4, #dot-R4 { top: 23px; background-color: #8be9fd; } 
+        #dot-L3, #dot-R3 { top: 10px; background-color: #50fa7b; } 
+        #dot-L2, #dot-R2 { top: 20px; background-color: #ffb86c; } 
+        .finger-dot.active { transform: scale(2.4); opacity: 1; border-color: rgba(255,255,255,0.9); box-shadow: 0 0 15px rgba(0,0,0,0.3); }
+        .keyboard-row { display: flex; justify-content: center; width: 100%; margin-bottom: 8px; position: relative; }
         .row-1 { transform: translateX(-30px); }
         .row-2 { transform: translateX(0px); }
         .row-3 { transform: translateX(-15px); } 
-        
         .hand-gap { width: 90px; flex-shrink: 0; }
-
-        .key-btn { 
-            border: none; 
-            border-radius: 6px; 
-            width: 55px; 
-            height: 55px; 
-            margin: 0 3px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            font-size: 1.2rem; 
-            font-weight: bold; 
-            color: #444; 
-            position: relative; 
-            flex-shrink: 0;
-        }
-
-        /* 配色設定 */
-        .pinky  { background-color: #ffcceb; box-shadow: 0 3px 0 #ff79c6; }
-        .ring   { background-color: #d1f7ff; box-shadow: 0 3px 0 #8be9fd; }
+        .key-btn { border: none; border-radius: 6px; width: 55px; height: 55px; margin: 0 3px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: bold; color: #444; position: relative; flex-shrink: 0; }
+        .pinky { background-color: #ffcceb; box-shadow: 0 3px 0 #ff79c6; }
+        .ring { background-color: #d1f7ff; box-shadow: 0 3px 0 #8be9fd; }
         .middle { background-color: #d4fee0; box-shadow: 0 3px 0 #50fa7b; }
-        .index  { background-color: #ffebd1; box-shadow: 0 3px 0 #ffb86c; }
-
+        .index { background-color: #ffebd1; box-shadow: 0 3px 0 #ffb86c; }
         .home-pos { text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 2px; }
-        
-        .highlight-key { 
-            background-color: #444 !important; 
-            color: white !important; 
-            transform: scale(1.05); 
-            box-shadow: 0 0 10px rgba(0,0,0,0.3) !important; 
-        }
-
+        .highlight-key { background-color: #444 !important; color: white !important; transform: scale(1.05); box-shadow: 0 0 10px rgba(0,0,0,0.3) !important; }
         #ok-badge { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0); font-size: 3.5rem; font-weight: bold; color: #27ae60; background: rgba(255,255,255,0.95); padding: 15px 40px; border-radius: 100px; border: 8px solid #27ae60; z-index: 20; transition: transform 0.2s; pointer-events: none; }
         #ok-badge.show { transform: translate(-50%, -50%) scale(1); }
         #start-btn { background: #e67e22; color: white; border: none; padding: 15px 40px; border-radius: 50px; font-size: 1.3rem; font-weight: bold; cursor: pointer; margin-top: 15px; }
@@ -142,29 +75,19 @@
         <div id="ok-badge">OK!</div>
         <div id="kana-display">タッチタイピング練習</div>
         <div id="roma-display">STARTボタンを押してね</div>
-        <div id="score-board">SCORE: <span id="score">0</span> / 23</div>
+        
+        <div id="status-area">
+            <div id="score-board">SCORE: <span id="score">0</span> / 23</div>
+            <button id="audio-toggle" onclick="toggleAudio()">
+                <span class="icon-speaker"></span>
+                <span>読み上げ: <span id="audio-text">ON</span></span>
+            </button>
+        </div>
+        
         <button id="start-btn" onclick="startGame()">START</button>
     </div>
 
     <div id="keyboard-area">
-        <div id="finger-navigator">
-            <div class="nav-group">
-                <div class="dot-container"><div class="finger-shape f-pinky"></div><div class="finger-dot" id="dot-L5"></div></div>
-                <div class="dot-container"><div class="finger-shape f-ring"></div><div class="finger-dot" id="dot-L4"></div></div>
-                <div class="dot-container"><div class="finger-shape f-middle"></div><div class="finger-dot" id="dot-L3"></div></div>
-                <div class="dot-container"><div class="finger-shape f-index"></div><div class="finger-dot" id="dot-L2"></div></div>
-                <div class="dot-container"><div class="finger-shape f-thumb"></div></div> 
-            </div>
-            <div class="hand-separator"></div>
-            <div class="nav-group">
-                <div class="dot-container"><div class="finger-shape f-thumb"></div></div> 
-                <div class="dot-container"><div class="finger-shape f-index"></div><div class="finger-dot" id="dot-R2"></div></div>
-                <div class="dot-container"><div class="finger-shape f-middle"></div><div class="finger-dot" id="dot-R3"></div></div>
-                <div class="dot-container"><div class="finger-shape f-ring"></div><div class="finger-dot" id="dot-R4"></div></div>
-                <div class="dot-container"><div class="finger-shape f-pinky"></div><div class="finger-dot" id="dot-R5"></div></div>
-            </div>
-        </div>
-
         <div id="virtual-keyboard">
             <div class="keyboard-row row-1">
                 <div class="key-btn pinky" data-key="q">Q</div>
@@ -205,29 +128,56 @@
                 <div class="key-btn" style="visibility:hidden"></div>
             </div>
         </div>
+
+        <div id="finger-navigator">
+            <div class="nav-group">
+                <div class="dot-container"><div class="finger-dot" id="dot-L5"></div><div class="finger-shape f-pinky"></div></div>
+                <div class="dot-container"><div class="finger-dot" id="dot-L4"></div><div class="finger-shape f-ring"></div></div>
+                <div class="dot-container"><div class="finger-dot" id="dot-L3"></div><div class="finger-shape f-middle"></div></div>
+                <div class="dot-container"><div class="finger-dot" id="dot-L2"></div><div class="finger-shape f-index"></div></div>
+                <div class="dot-container"><div class="finger-shape f-thumb"></div></div> 
+            </div>
+            <div class="hand-separator"></div>
+            <div class="nav-group">
+                <div class="dot-container"><div class="finger-shape f-thumb"></div></div> 
+                <div class="dot-container"><div class="finger-dot" id="dot-R2"></div><div class="finger-shape f-index"></div></div>
+                <div class="dot-container"><div class="finger-dot" id="dot-R3"></div><div class="finger-shape f-middle"></div></div>
+                <div class="dot-container"><div class="finger-dot" id="dot-R4"></div><div class="finger-shape f-ring"></div></div>
+                <div class="dot-container"><div class="finger-dot" id="dot-R5"></div><div class="finger-shape f-pinky"></div></div>
+            </div>
+        </div>
     </div>
 
     <input type="text" id="hidden-input" autocomplete="off">
 
     <script>
-        // JS内のマッピングも修正
+        let isAudioEnabled = true;
+
+        function toggleAudio() {
+            isAudioEnabled = !isAudioEnabled;
+            const btn = document.getElementById("audio-toggle");
+            const text = document.getElementById("audio-text");
+            
+            if (isAudioEnabled) {
+                btn.classList.remove("audio-off");
+                text.innerText = "ON";
+            } else {
+                btn.classList.add("audio-off");
+                text.innerText = "OFF";
+                if (window.speechSynthesis) speechSynthesis.cancel();
+            }
+            inputElement.focus();
+        }
+
+        // 以下、ロジック部分は前回と同様
         const fingerToDot = {
             'q':'L5', 'a':'L5', 'z':'L5',
             'w':'L4', 's':'L4', 'x':'L4',
             'e':'L3', 'd':'L3', 'c':'L3',
             'r':'L2', 'f':'L2', 'v':'L2', 't':'L2', 'g':'L2', 'b':'L2',
-            'y':'R2', 'h':'R2', 'n':'R2', 'u':'R2', 'j':'R2', 'm':'R2', // MをR2(右手人差指)に修正
-            'i':'R3', 'k':'R3', 
-            'o':'R4', 'l':'R4',
-            'p':'R5'
+            'y':'R2', 'h':'R2', 'n':'R2', 'u':'R2', 'j':'R2', 'm':'R2',
+            'i':'R3', 'k':'R3', 'o':'R4', 'l':'R4', 'p':'R5'
         };
-        const fingerColors = {
-            'L5':'#ff79c6', 'R5':'#ff79c6',
-            'L4':'#8be9fd', 'R4':'#8be9fd',
-            'L3':'#50fa7b', 'R3':'#50fa7b',
-            'L2':'#ffb86c', 'R2':'#ffb86c'
-        };
-
         const originalQuestions = [
             { k: "ようしょうきんほう", r: "yousyoukinhou" }, { k: "じんしの", r: "jinshino" }, { k: "たかはしかいせ", r: "takahashikaise" },
             { k: "やまもとゆきの", r: "yamamotoyukino" }, { k: "ふるはしまな", r: "furuhasimana" }, { k: "はやししゅうご", r: "hayasisyuugo" },
@@ -242,12 +192,10 @@
             let roma = q.r.replace(/zi/g, "ji").replace(/zyu/g, "ju").replace(/hu/g, "fu").replace(/tsu/g, "tu").replace(/chi/g, "ti").replace(/shi/g, "si");
             return { k: q.k, r: roma };
         });
-
         let shuffledList = [], currentQ = null, charIndex = 0, score = 0, isStarted = false;
         const kanaElement = document.getElementById("kana-display"), romaElement = document.getElementById("roma-display"), scoreElement = document.getElementById("score"), inputElement = document.getElementById("hidden-input"), startBtn = document.getElementById("start-btn"), okBadge = document.getElementById("ok-badge");
         const keyButtons = document.querySelectorAll('.key-btn');
         const fingerDots = document.querySelectorAll('.finger-dot');
-
         function startGame() { isStarted = true; startBtn.style.display = "none"; inputElement.focus(); nextQuestion(); }
         function focusInput() { if (isStarted) inputElement.focus(); }
         function nextQuestion() {
@@ -255,14 +203,13 @@
             currentQ = shuffledList.pop();
             charIndex = 0;
             updateDisplay();
-            if (window.speechSynthesis) {
+            if (isAudioEnabled && window.speechSynthesis) {
                 speechSynthesis.cancel();
                 const uttr = new SpeechSynthesisUtterance(currentQ.k);
                 uttr.lang = 'ja-JP';
                 speechSynthesis.speak(uttr);
             }
         }
-
         function updateDisplay() {
             kanaElement.innerText = currentQ.k;
             let html = "";
@@ -274,10 +221,9 @@
             romaElement.innerHTML = html;
             updateVisualAids();
         }
-
         function updateVisualAids() {
             keyButtons.forEach(btn => btn.classList.remove('highlight-key'));
-            fingerDots.forEach(dot => { dot.classList.remove('active'); dot.style.backgroundColor = '#f0f0f0'; });
+            fingerDots.forEach(dot => dot.classList.remove('active'));
             if(!currentQ || charIndex >= currentQ.r.length) return;
             const targetChar = currentQ.r[charIndex];
             const targetBtn = document.querySelector(`.key-btn[data-key="${targetChar}"]`);
@@ -285,10 +231,9 @@
                 targetBtn.classList.add('highlight-key');
                 const dotId = fingerToDot[targetChar];
                 const activeDot = document.getElementById(`dot-${dotId}`);
-                if (activeDot) { activeDot.classList.add('active'); activeDot.style.backgroundColor = fingerColors[dotId]; }
+                if (activeDot) activeDot.classList.add('active');
             }
         }
-
         inputElement.addEventListener("input", () => {
             if (!isStarted || okBadge.classList.contains("show")) { inputElement.value = ""; return; }
             const typed = inputElement.value.toLowerCase();
