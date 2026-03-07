@@ -113,19 +113,16 @@
             color: #444; 
             position: relative; 
             flex-shrink: 0;
-            transition: opacity 0.1s;
         }
 
-        /* --- 修正ポイント：キー全体を色で塗りつぶす --- */
-        /* 背景色をそれぞれの指の色に設定し、影を調整 */
-        .pinky  { background-color: #ffcceb; box-shadow: 0 3px 0 #ff79c6; } /* ピンク系 */
-        .ring   { background-color: #d1f7ff; box-shadow: 0 3px 0 #8be9fd; } /* 水色系 */
-        .middle { background-color: #d4fee0; box-shadow: 0 3px 0 #50fa7b; } /* 緑系 */
-        .index  { background-color: #ffebd1; box-shadow: 0 3px 0 #ffb86c; } /* オレンジ系 */
+        /* 配色設定 */
+        .pinky  { background-color: #ffcceb; box-shadow: 0 3px 0 #ff79c6; }
+        .ring   { background-color: #d1f7ff; box-shadow: 0 3px 0 #8be9fd; }
+        .middle { background-color: #d4fee0; box-shadow: 0 3px 0 #50fa7b; }
+        .index  { background-color: #ffebd1; box-shadow: 0 3px 0 #ffb86c; }
 
         .home-pos { text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 2px; }
         
-        /* ハイライト時はより濃い色にする */
         .highlight-key { 
             background-color: #444 !important; 
             color: white !important; 
@@ -203,7 +200,7 @@
                 <div class="key-btn index" data-key="b">B</div>
                 <div class="hand-gap"></div>
                 <div class="key-btn index" data-key="n">N</div>
-                <div class="key-btn middle" data-key="m">M</div>
+                <div class="key-btn index" data-key="m">M</div>
                 <div class="key-btn" style="visibility:hidden"></div>
                 <div class="key-btn" style="visibility:hidden"></div>
             </div>
@@ -213,13 +210,14 @@
     <input type="text" id="hidden-input" autocomplete="off">
 
     <script>
+        // JS内のマッピングも修正
         const fingerToDot = {
             'q':'L5', 'a':'L5', 'z':'L5',
             'w':'L4', 's':'L4', 'x':'L4',
             'e':'L3', 'd':'L3', 'c':'L3',
             'r':'L2', 'f':'L2', 'v':'L2', 't':'L2', 'g':'L2', 'b':'L2',
-            'y':'R2', 'h':'R2', 'n':'R2', 'u':'R2', 'j':'R2',
-            'i':'R3', 'k':'R3', 'm':'R3',
+            'y':'R2', 'h':'R2', 'n':'R2', 'u':'R2', 'j':'R2', 'm':'R2', // MをR2(右手人差指)に修正
+            'i':'R3', 'k':'R3', 
             'o':'R4', 'l':'R4',
             'p':'R5'
         };
@@ -229,6 +227,7 @@
             'L3':'#50fa7b', 'R3':'#50fa7b',
             'L2':'#ffb86c', 'R2':'#ffb86c'
         };
+
         const originalQuestions = [
             { k: "ようしょうきんほう", r: "yousyoukinhou" }, { k: "じんしの", r: "jinshino" }, { k: "たかはしかいせ", r: "takahashikaise" },
             { k: "やまもとゆきの", r: "yamamotoyukino" }, { k: "ふるはしまな", r: "furuhasimana" }, { k: "はやししゅうご", r: "hayasisyuugo" },
