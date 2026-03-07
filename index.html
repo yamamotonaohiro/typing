@@ -3,7 +3,7 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-select=none">
     <meta name="robots" content="noindex,nofollow">
-    <title>Classmate Typing - 3-Row Keyboard Guide</title>
+    <title>Classmate Typing - Perfect Layout</title>
     <style>
         body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; background: #fdfdfd; color: #333; margin: 0; min-height: 100vh; padding: 20px; box-sizing: border-box; }
         #container { text-align: center; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 600px; position: relative; margin-bottom: 20px; }
@@ -12,30 +12,32 @@
         .correct { color: #dcdde1; }
         .cursor { color: #e67e22; border-bottom: 3px solid #e67e22; }
         
-        /* バーチャルキーボード全体の枠 */
+        /* キーボードの外枠 */
         #virtual-keyboard {
-            background: #e0e0e0;
-            padding: 15px;
+            background: #d1d4d9;
+            padding: 12px;
             border-radius: 12px;
             width: 100%;
             max-width: 650px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             user-select: none;
+            box-sizing: border-box;
         }
-        /* 各行の並び */
+        /* 各行の設定 */
         .keyboard-row {
             display: flex;
             justify-content: center;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
             width: 100%;
         }
-        /* キー単体のスタイル */
+        /* キーのスタイル */
         .key-btn {
-            background: #fff;
-            border: 1px solid #ccc;
+            background: #ffffff;
+            border: none;
             border-radius: 6px;
             flex: 1;
-            height: 45px;
+            max-width: 55px; /* キーの最大幅を固定して崩れを防ぐ */
+            height: 48px;
             margin: 0 3px;
             display: flex;
             align-items: center;
@@ -43,20 +45,19 @@
             font-size: 1.2rem;
             font-weight: bold;
             color: #444;
-            box-shadow: 0 3px 0 #bbb;
+            box-shadow: 0 3px 0 #adb1b8;
             transition: all 0.05s;
         }
-        
-        /* 実際のキーボードらしいズレを作るための調整 */
-        .row-1 { padding-left: 0; }
-        .row-2 { padding-left: 15px; } /* 中段のズレ */
-        .row-3 { padding-left: 35px; } /* 下段のズレ */
 
-        /* 次に打つキーのハイライト */
+        /* 中段と下段を少しずらすための透明な余白 */
+        .keyboard-row.row-2::before { content: ""; flex: 0.5; max-width: 25px; }
+        .keyboard-row.row-2::after { content: ""; flex: 0.5; max-width: 25px; }
+        .keyboard-row.row-3::before { content: ""; flex: 0.8; max-width: 40px; }
+        .keyboard-row.row-3::after { content: ""; flex: 0.8; max-width: 40px; }
+
         .highlight-key {
             background-color: #e67e22 !important;
             color: white !important;
-            border-color: #d35400 !important;
             box-shadow: 0 0 12px rgba(230,126,34,0.7) !important;
             transform: scale(1.05);
         }
