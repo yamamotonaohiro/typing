@@ -5,38 +5,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-select=none">
     <title>タッチタイピングの練習</title>
     <style>
-        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; background: #fdfdfd; color: #333; margin: 0; min-height: 100vh; padding: 10px; box-sizing: border-box; }
-        #container { text-align: center; background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 720px; position: relative; margin-bottom: 30px; z-index: 10; }
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; background: #fdfdfd; color: #333; margin: 0; min-height: 100vh; padding: 5px; box-sizing: border-box; }
+        #container { text-align: center; background: white; padding: 10px 20px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 720px; position: relative; margin-bottom: 10px; z-index: 10; }
         
-        #title-display { font-size: 1.8rem; font-weight: bold; margin-bottom: 15px; color: #7f8c8d; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        #title-display { font-size: 1.4rem; font-weight: bold; margin-bottom: 8px; color: #7f8c8d; border-bottom: 1px solid #eee; padding-bottom: 5px; }
         
         #question-box {
             background: #fafafa;
             border: 2px solid #eaeeef;
             border-radius: 15px;
-            padding: 20px;
-            margin: 15px 0;
-            min-height: 120px;
+            padding: 10px;
+            margin: 5px 0;
+            min-height: 90px;
             display: flex;
             flex-direction: column;
             justify-content: center;
         }
-        #sub-display { font-size: 2.8rem; font-weight: bold; margin-bottom: 10px; color: #2c3e50; transition: all 0.2s; }
-        #roma-display { font-size: 2rem; letter-spacing: 0.15em; color: #bdc3c7; min-height: 1.2em; text-transform: lowercase; }
+        #sub-display { font-size: 2.4rem; font-weight: bold; margin-bottom: 5px; color: #2c3e50; }
+        #roma-display { font-size: 1.8rem; letter-spacing: 0.15em; color: #bdc3c7; min-height: 1.1em; text-transform: lowercase; }
         
-        #course-select { margin-top: 10px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-        .course-btn { background: #3498db; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-size: 1rem; cursor: pointer; transition: background 0.2s; font-weight: bold; }
+        #course-select { margin-top: 5px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+        .course-btn { background: #3498db; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 0.95rem; cursor: pointer; transition: background 0.2s; font-weight: bold; }
         .course-btn:hover { background: #2980b9; }
 
-        #status-area { display: flex; align-items: center; justify-content: center; gap: 20px; margin-top: 20px; }
-        #score-board { font-weight: bold; color: #7f8c8d; font-size: 1.2rem; }
-        #audio-toggle { background: #ffffff; border: 2px solid #e67e22; border-radius: 50px; padding: 6px 18px; cursor: pointer; font-size: 0.9rem; color: #e67e22; font-weight: bold; }
+        #status-area { display: flex; align-items: center; justify-content: center; gap: 20px; margin-top: 10px; }
+        #score-board { font-weight: bold; color: #7f8c8d; font-size: 1.1rem; }
+        #audio-toggle { background: #ffffff; border: 2px solid #e67e22; border-radius: 50px; padding: 4px 15px; cursor: pointer; font-size: 0.85rem; color: #e67e22; font-weight: bold; }
 
-        #ok-badge { position: absolute; top: 105%; left: 50%; transform: translateX(-50%) scale(0); font-size: 3.5rem; font-weight: bold; color: #27ae60; background: white; padding: 10px 50px; border-radius: 100px; border: 6px solid #27ae60; z-index: 100; transition: transform 0.2s, opacity 0.2s; pointer-events: none; box-shadow: 0 5px 20px rgba(0,0,0,0.1); opacity: 0; }
-        #ok-badge.show { transform: translateX(-50%) scale(1.1); opacity: 1; }
+        #ok-badge { position: absolute; top: 100%; left: 50%; transform: translateX(-50%) scale(0); font-size: 3rem; font-weight: bold; color: #27ae60; background: white; padding: 5px 40px; border-radius: 100px; border: 5px solid #27ae60; z-index: 100; transition: transform 0.2s, opacity 0.2s; pointer-events: none; box-shadow: 0 5px 15px rgba(0,0,0,0.1); opacity: 0; }
+        #ok-badge.show { transform: translateX(-50%) scale(1.0); opacity: 1; }
 
-        #keyboard-area { width: 920px; background: #d1d4d9; padding: 30px 0; border-radius: 12px; display: flex; flex-direction: column; align-items: center; position: relative; }
-        .keyboard-row { display: flex; justify-content: center; width: 100%; margin-bottom: 8px; }
+        #keyboard-area { width: 920px; background: #d1d4d9; padding: 15px 0; border-radius: 12px; display: flex; flex-direction: column; align-items: center; position: relative; }
+        .keyboard-row { display: flex; justify-content: center; width: 100%; margin-bottom: 4px; }
         .hand-gap { width: 80px; } 
         .row-1 { transform: translateX(-15px); }
         .row-2 { transform: translateX(10px); }
@@ -51,17 +51,17 @@
         .index { background-color: #ffebd1; box-shadow: 0 3px 0 #ffb86c; }
         .highlight-key { background-color: #444 !important; color: white !important; transform: scale(1.05); border-color: #000 !important; }
 
-        #finger-navigator { display: flex; justify-content: center; margin-top: 20px; padding: 10px 0 0 0; background: rgba(255,255,255,0.25); border-radius: 15px; align-items: flex-end; width: fit-content; transform: translateX(8px); }
+        #finger-navigator { display: flex; justify-content: center; margin-top: 10px; padding: 5px 0 0 0; background: rgba(255,255,255,0.25); border-radius: 15px; align-items: flex-end; width: fit-content; transform: translateX(8px); }
         .nav-group { display: flex; width: 305px; }
-        .dot-container { width: 61px; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; position: relative; height: 95px; }
+        .dot-container { width: 61px; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; position: relative; height: 85px; }
         .finger-shape { position: absolute; bottom: 0; width: 42px; background: rgba(0, 0, 0, 0.08); border-radius: 20px 20px 5px 5px; z-index: 1; }
-        .f-pinky { height: 55px; } .f-ring { height: 72px; } .f-middle { height: 85px; } .f-index { height: 75px; } .f-thumb { height: 45px; } 
+        .f-pinky { height: 50px; } .f-ring { height: 65px; } .f-middle { height: 75px; } .f-index { height: 68px; } .f-thumb { height: 40px; } 
         .finger-dot { width: 18px; height: 18px; border-radius: 50%; transition: all 0.15s ease-out; border: 2px solid rgba(0,0,0,0.1); margin-top: 5px; z-index: 2; position: relative; opacity: 0.7; }
-        #dot-L5, #dot-R5 { top: 40px; background-color: #ff79c6; } 
-        #dot-L4, #dot-R4 { top: 28px; background-color: #8be9fd; } 
-        #dot-L3, #dot-R3 { top: 10px; background-color: #50fa7b; } 
-        #dot-L2, #dot-R2 { top: 20px; background-color: #ffb86c; } 
-        .finger-dot.active { transform: scale(2.4); opacity: 1; border-color: rgba(255,255,255,0.9); box-shadow: 0 0 15px rgba(0,0,0,0.3); }
+        #dot-L5, #dot-R5 { top: 35px; background-color: #ff79c6; } 
+        #dot-L4, #dot-R4 { top: 25px; background-color: #8be9fd; } 
+        #dot-L3, #dot-R3 { top: 8px; background-color: #50fa7b; } 
+        #dot-L2, #dot-R2 { top: 15px; background-color: #ffb86c; } 
+        .finger-dot.active { transform: scale(2.2); opacity: 1; border-color: rgba(255,255,255,0.9); box-shadow: 0 0 10px rgba(0,0,0,0.3); }
         .hand-separator { width: 85px; } 
         #hidden-input { position: absolute; opacity: 0; pointer-events: none; left: -9999px; }
     </style>
@@ -71,17 +71,14 @@
     <div id="container">
         <div id="ok-badge">OK!</div>
         <div id="title-display">タッチタイピングの練習</div>
-        
         <div id="question-box">
             <div id="sub-display">コースを選んでスタート</div>
             <div id="roma-display"></div>
         </div>
-        
         <div id="course-select">
             <button class="course-btn" onclick="selectCourse(0)">２年１組</button>
             <button class="course-btn" onclick="selectCourse(1)">都道府県</button>
         </div>
-
         <div id="status-area">
             <div id="score-board">SCORE: <span id="score">0</span></div>
             <button id="audio-toggle" onclick="toggleAudio()">
@@ -141,7 +138,6 @@
             ["のろのりこ", "しが"]
         ];
 
-        // 「じゅ」をjuにするなど、表示を最適化
         const kanaMap = {
             'あ':'a','い':'i','う':'u','え':'e','お':'o','か':'ka','き':'ki','く':'ku','け':'ke','こ':'ko',
             'さ':'sa','し':'si','す':'su','せ':'se','そ':'so','た':'ta','ち':'ti','つ':'tu','て':'te','と':'to',
