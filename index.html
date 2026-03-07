@@ -3,7 +3,7 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-select=none">
     <meta name="robots" content="noindex,nofollow">
-    <title>Classmate Typing - Full Hand Guide</title>
+    <title>Classmate Typing - Offset Adjustment</title>
     <style>
         body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; background: #fdfdfd; color: #333; margin: 0; min-height: 100vh; padding: 10px; box-sizing: border-box; }
         #container { text-align: center; background: white; padding: 20px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 700px; position: relative; margin-bottom: 10px; }
@@ -12,7 +12,7 @@
         #score-board { margin-top: 10px; font-weight: bold; color: #7f8c8d; }
 
         #keyboard-area {
-            width: 780px; 
+            width: 820px; 
             background: #d1d4d9;
             padding: 30px 0;
             border-radius: 12px;
@@ -22,19 +22,19 @@
             align-items: center;
         }
 
-        /* --- 指ナビゲーター：親指シルエットを追加 --- */
         #finger-navigator {
             display: flex;
+            justify-content: center;
             margin-bottom: 25px;
             padding: 20px 0 0 0;
             background: rgba(255,255,255,0.25);
             border-radius: 15px;
             align-items: flex-end;
+            width: fit-content;
         }
         .nav-group {
             display: flex;
-            width: 305px;
-            position: relative;
+            width: 305px; 
         }
         .dot-container {
             width: 61px;
@@ -43,37 +43,24 @@
             justify-content: flex-end;
             align-items: center;
             position: relative;
-            height: 80px;
+            height: 85px;
         }
         
-        /* 指のシルエット：色を少し肌色に近いグレーに変更 */
         .finger-shape {
             position: absolute;
             bottom: 0;
             width: 42px;
-            background: rgba(0, 0, 0, 0.07);
+            background: rgba(0, 0, 0, 0.08);
             border-radius: 20px 20px 5px 5px;
             z-index: 1;
         }
         .f-pinky  { height: 45px; }
         .f-ring   { height: 62px; }
-        .f-middle { height: 72px; }
-        .f-index  { height: 62px; }
-        
-        /* 親指の配置：丸を置かないためシルエットのみ */
-        .f-thumb {
-            height: 40px;
-            width: 45px;
-            border-radius: 15px 25px 10px 5px;
-            position: absolute;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.07);
-        }
-        /* 左手親指は右側に、右手親指は左側に配置 */
-        .left-thumb  { right: -48px; transform: rotate(15deg); }
-        .right-thumb { left: -48px; transform: rotate(-15deg); }
+        .f-middle { height: 75px; }
+        .f-index  { height: 65px; }
+        .f-thumb  { height: 40px; } 
 
-        .hand-separator { width: 60px; } /* 親指分、間隔を少し広げる */
+        .hand-separator { width: 90px; } 
 
         .finger-dot {
             width: 18px;
@@ -91,11 +78,20 @@
             box-shadow: 0 0 15px rgba(0,0,0,0.3);
         }
 
-        /* キーボード配置設定 */
-        .keyboard-row { display: flex; position: relative; margin-bottom: 8px; }
-        .row-2 { left: 0px; }
-        .row-1 { left: -30px; }
-        .row-3 { left: 42px; }
+        .keyboard-row {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            margin-bottom: 8px;
+            position: relative;
+        }
+
+        /* --- 修正ポイント：3列目をさらに左へずらす --- */
+        .row-1 { transform: translateX(-30px); }
+        .row-2 { transform: translateX(0px); }
+        .row-3 { transform: translateX(0px); } /* 3列目の右方向への移動を0にし、2列目(A)の真下付近へ修正 */
+        
+        .hand-gap { width: 90px; flex-shrink: 0; }
 
         .key-btn { 
             background: #ffffff; 
@@ -119,7 +115,6 @@
         .middle { border-top: 4px solid #50fa7b; }
         .index  { border-top: 4px solid #ffb86c; }
 
-        .hand-gap { width: 40px; flex-shrink: 0; }
         .home-pos { text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 2px; }
         .highlight-key { background-color: #444 !important; color: white !important; transform: scale(1.05); box-shadow: 0 0 10px rgba(0,0,0,0.3) !important; }
 
@@ -146,13 +141,11 @@
                 <div class="dot-container"><div class="finger-shape f-ring"></div><div class="finger-dot" id="dot-L4"></div></div>
                 <div class="dot-container"><div class="finger-shape f-middle"></div><div class="finger-dot" id="dot-L3"></div></div>
                 <div class="dot-container"><div class="finger-shape f-index"></div><div class="finger-dot" id="dot-L2"></div></div>
-                <div class="dot-container">
-                    <div class="f-thumb left-thumb"></div> </div>
+                <div class="dot-container"><div class="finger-shape f-thumb"></div></div> 
             </div>
             <div class="hand-separator"></div>
             <div class="nav-group">
-                <div class="dot-container">
-                    <div class="f-thumb right-thumb"></div> </div>
+                <div class="dot-container"><div class="finger-shape f-thumb"></div></div> 
                 <div class="dot-container"><div class="finger-shape f-index"></div><div class="finger-dot" id="dot-R2"></div></div>
                 <div class="dot-container"><div class="finger-shape f-middle"></div><div class="finger-dot" id="dot-R3"></div></div>
                 <div class="dot-container"><div class="finger-shape f-ring"></div><div class="finger-dot" id="dot-R4"></div></div>
@@ -205,7 +198,7 @@
     <input type="text" id="hidden-input" autocomplete="off">
 
     <script>
-        // ロジック部分は維持
+        // JavaScript部分は以前のロジック（）を継承しています。
         const fingerToDot = {
             'q':'L5', 'a':'L5', 'z':'L5',
             'w':'L4', 's':'L4', 'x':'L4',
@@ -227,7 +220,7 @@
             { k: "やまもとゆきの", r: "yamamotoyukino" }, { k: "ふるはしまな", r: "furuhasimana" }, { k: "はやししゅうご", r: "hayasisyuugo" },
             { k: "なかたにはるか", r: "nakataniharuka" }, { k: "おかだつぐみ", r: "okadatugumi" }, { k: "ささきたかまさ", r: "sasakitakamasa" },
             { k: "さだまさはるか", r: "sadamasaharuka" }, { k: "みずのえま", r: "mizunoema" }, { k: "おおむろほおり", r: "oomurohoori" },
-            { k: "ごはいよう", r: "gohaiyou" }, { k: "しゃへいじゅん", r: "syaheijun" }, { k: "たかしまあらタ", r: "takasimaarata" },
+            { k: "ごはいよう", r: "gohaiyou" }, { k: "しゃへいじゅん", r: "syaheijun" }, { k: "たかしまあらた", r: "takasimaarata" },
             { k: "ちんいりん", r: "tinirin" }, { k: "わかまつえいと", r: "wakamatueito" }, { k: "つかもとあさ", r: "tukamotoasa" },
             { k: "しゅうかずまさ", r: "syuukazumasa" }, { k: "よしだめい", r: "yosidamei" }, { k: "どましぇんこにこる", r: "domasyenkonikoru" },
             { k: "かいだみら", r: "kaidamira" }, { k: "いしいみつき", r: "isiimituki" }
@@ -240,7 +233,6 @@
         const kanaElement = document.getElementById("kana-display"), romaElement = document.getElementById("roma-display"), scoreElement = document.getElementById("score"), inputElement = document.getElementById("hidden-input"), startBtn = document.getElementById("start-btn"), okBadge = document.getElementById("ok-badge");
         const keyButtons = document.querySelectorAll('.key-btn');
         const fingerDots = document.querySelectorAll('.finger-dot');
-
         function startGame() { isStarted = true; startBtn.style.display = "none"; inputElement.focus(); nextQuestion(); }
         function focusInput() { if (isStarted) inputElement.focus(); }
         function nextQuestion() {
