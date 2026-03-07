@@ -39,13 +39,16 @@
         .nav-group { display: flex; width: 305px; }
         .dot-container { width: 61px; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; position: relative; height: 95px; }
         .finger-shape { position: absolute; bottom: 0; width: 42px; background: rgba(0, 0, 0, 0.08); border-radius: 20px 20px 5px 5px; z-index: 1; }
-        .f-pinky { height: 55px; } .f-ring { height: 62px; } .f-middle { height: 85px; } .f-index { height: 75px; } .f-thumb { height: 45px; } 
+        
+        /* 薬指（f-ring）を62pxから72pxへ長くしました */
+        .f-pinky { height: 55px; } .f-ring { height: 72px; } .f-middle { height: 85px; } .f-index { height: 75px; } .f-thumb { height: 45px; } 
+        
         .hand-separator { width: 90px; } 
         .finger-dot { width: 18px; height: 18px; border-radius: 50%; transition: all 0.15s ease-out; border: 2px solid rgba(0,0,0,0.1); margin-top: 5px; z-index: 2; position: relative; opacity: 0.7; }
         
-        /* 修正箇所: 薬指ドットの位置を23pxから33pxに下げました */
+        /* 薬指ドットの位置を再調整 */
         #dot-L5, #dot-R5 { top: 40px; background-color: #ff79c6; } 
-        #dot-L4, #dot-R4 { top: 33px; background-color: #8be9fd; } 
+        #dot-L4, #dot-R4 { top: 28px; background-color: #8be9fd; } 
         #dot-L3, #dot-R3 { top: 10px; background-color: #50fa7b; } 
         #dot-L2, #dot-R2 { top: 20px; background-color: #ffb86c; } 
         
@@ -177,7 +180,7 @@
             'i':'R3', 'k':'R3', 'o':'R4', 'l':'R4', 'p':'R5'
         };
         const originalQuestions = [
-            { k: "ようしょうきんほう", r: "yousyoukinhou" }, { k: "じんしの", r: "jinshino" }, { k: "たかはしかいせ", r: "takahashikaise" },
+            { k: "ようしょうきんほう", r: "yousyoukinhou" }, { k: "じんしの", r: "jinshino" }, { k: "たakahashikaise", r: "takahashikaise" },
             { k: "やまもとゆきの", r: "yamamotoyukino" }, { k: "ふるはしまな", r: "furuhasimana" }, { k: "はやししゅうご", r: "hayasisyuugo" },
             { k: "なかたにはるか", r: "nakataniharuka" }, { k: "おかだつぐみ", r: "okadatugumi" }, { k: "ささきたかまさ", r: "sasakitakamasa" },
             { k: "さだまさはるか", r: "sadamasaharuka" }, { k: "みずのえま", r: "mizunoema" }, { k: "おおむろほおり", r: "oomurohoori" },
