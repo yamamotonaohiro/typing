@@ -3,7 +3,7 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-select=none">
     <meta name="robots" content="noindex,nofollow">
-    <title>Classmate Typing - Perfect Layout</title>
+    <title>Classmate Typing - Standard Layout</title>
     <style>
         body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; background: #fdfdfd; color: #333; margin: 0; min-height: 100vh; padding: 20px; box-sizing: border-box; }
         #container { text-align: center; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 600px; position: relative; margin-bottom: 20px; }
@@ -12,31 +12,28 @@
         .correct { color: #dcdde1; }
         .cursor { color: #e67e22; border-bottom: 3px solid #e67e22; }
         
-        /* キーボードの外枠 */
         #virtual-keyboard {
             background: #d1d4d9;
-            padding: 12px;
+            padding: 15px;
             border-radius: 12px;
             width: 100%;
-            max-width: 650px;
+            max-width: 600px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             user-select: none;
             box-sizing: border-box;
         }
-        /* 各行の設定 */
         .keyboard-row {
             display: flex;
             justify-content: center;
             margin-bottom: 8px;
             width: 100%;
         }
-        /* キーのスタイル */
         .key-btn {
             background: #ffffff;
             border: none;
             border-radius: 6px;
             flex: 1;
-            max-width: 55px; /* キーの最大幅を固定して崩れを防ぐ */
+            max-width: 50px;
             height: 48px;
             margin: 0 3px;
             display: flex;
@@ -49,11 +46,13 @@
             transition: all 0.05s;
         }
 
-        /* 中段と下段を少しずらすための透明な余白 */
-        .keyboard-row.row-2::before { content: ""; flex: 0.5; max-width: 25px; }
-        .keyboard-row.row-2::after { content: ""; flex: 0.5; max-width: 25px; }
-        .keyboard-row.row-3::before { content: ""; flex: 0.8; max-width: 40px; }
-        .keyboard-row.row-3::after { content: ""; flex: 0.8; max-width: 40px; }
+        /* 階段状のズレ（オフセット）設定 */
+        .row-2 { padding-left: 20px; } /* 2列目のズレ */
+        .row-3 { padding-left: 45px; } /* 3列目をさらに左へ（実質的に1列目から見て大きくずれる） */
+        
+        /* 左右のバランスを整えるための空要素 */
+        .spacer-short { flex: 0.5; max-width: 25px; pointer-events: none; }
+        .spacer-long { flex: 1.2; max-width: 60px; pointer-events: none; }
 
         .highlight-key {
             background-color: #e67e22 !important;
@@ -66,7 +65,7 @@
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0);
             font-size: 4rem; font-weight: bold; color: #27ae60; background: rgba(255,255,255,0.9);
             padding: 15px 40px; border-radius: 100px; border: 8px solid #27ae60;
-            z-index: 20; pointer-events: none; transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 20; pointer-events: none; transition: transform 0.2s;
         }
         #ok-badge.show { transform: translate(-50%, -50%) scale(1); }
         #hidden-input { position: absolute; opacity: 0; pointer-events: none; }
@@ -110,6 +109,7 @@
             <div class="key-btn" data-key="j">J</div>
             <div class="key-btn" data-key="k">K</div>
             <div class="key-btn" data-key="l">L</div>
+            <div class="spacer-short"></div>
         </div>
         <div class="keyboard-row row-3">
             <div class="key-btn" data-key="z">Z</div>
@@ -119,6 +119,7 @@
             <div class="key-btn" data-key="b">B</div>
             <div class="key-btn" data-key="n">N</div>
             <div class="key-btn" data-key="m">M</div>
+            <div class="spacer-long"></div>
         </div>
     </div>
 
