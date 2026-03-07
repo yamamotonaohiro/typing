@@ -3,7 +3,7 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-select=none">
     <meta name="robots" content="noindex,nofollow">
-    <title>Classmate Typing - Offset Adjustment</title>
+    <title>タッチタイピング練習</title>
     <style>
         body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; background: #fdfdfd; color: #333; margin: 0; min-height: 100vh; padding: 10px; box-sizing: border-box; }
         #container { text-align: center; background: white; padding: 20px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 700px; position: relative; margin-bottom: 10px; }
@@ -22,6 +22,7 @@
             align-items: center;
         }
 
+        /* 指ナビゲーター：丸を指先に配置 */
         #finger-navigator {
             display: flex;
             justify-content: center;
@@ -40,10 +41,10 @@
             width: 61px;
             display: flex;
             flex-direction: column;
-            justify-content: flex-end;
+            justify-content: flex-start;
             align-items: center;
             position: relative;
-            height: 85px;
+            height: 95px;
         }
         
         .finger-shape {
@@ -54,11 +55,11 @@
             border-radius: 20px 20px 5px 5px;
             z-index: 1;
         }
-        .f-pinky  { height: 45px; }
-        .f-ring   { height: 62px; }
-        .f-middle { height: 75px; }
-        .f-index  { height: 65px; }
-        .f-thumb  { height: 40px; } 
+        .f-pinky  { height: 55px; }
+        .f-ring   { height: 72px; }
+        .f-middle { height: 85px; }
+        .f-index  { height: 75px; }
+        .f-thumb  { height: 45px; } 
 
         .hand-separator { width: 90px; } 
 
@@ -69,15 +70,24 @@
             background-color: #f0f0f0;
             transition: all 0.15s ease-out;
             border: 2px solid #bbb;
-            margin-bottom: 12px;
+            margin-top: 5px;
             z-index: 2;
+            position: relative;
         }
+        
+        /* 指先に合わせたドットの高さ調整 */
+        #dot-L5, #dot-R5 { top: 40px; } 
+        #dot-L4, #dot-R4 { top: 23px; } 
+        #dot-L3, #dot-R3 { top: 10px; } 
+        #dot-L2, #dot-R2 { top: 20px; } 
+
         .finger-dot.active {
             transform: scale(2.4);
             border-color: rgba(255,255,255,0.9);
             box-shadow: 0 0 15px rgba(0,0,0,0.3);
         }
 
+        /* キーボード配置：3列目のオフセットを微調整 */
         .keyboard-row {
             display: flex;
             justify-content: center;
@@ -86,10 +96,9 @@
             position: relative;
         }
 
-        /* --- 修正ポイント：3列目をさらに左へずらす --- */
         .row-1 { transform: translateX(-30px); }
         .row-2 { transform: translateX(0px); }
-        .row-3 { transform: translateX(0px); } /* 3列目の右方向への移動を0にし、2列目(A)の真下付近へ修正 */
+        .row-3 { transform: translateX(-15px); } 
         
         .hand-gap { width: 90px; flex-shrink: 0; }
 
@@ -128,7 +137,7 @@
 
     <div id="container">
         <div id="ok-badge">OK!</div>
-        <div id="kana-display">タイピング練習</div>
+        <div id="kana-display">タッチタイピング練習</div>
         <div id="roma-display">STARTボタンを押してね</div>
         <div id="score-board">SCORE: <span id="score">0</span> / 23</div>
         <button id="start-btn" onclick="startGame()">START</button>
@@ -198,7 +207,6 @@
     <input type="text" id="hidden-input" autocomplete="off">
 
     <script>
-        // JavaScript部分は以前のロジック（）を継承しています。
         const fingerToDot = {
             'q':'L5', 'a':'L5', 'z':'L5',
             'w':'L4', 's':'L4', 'x':'L4',
@@ -229,10 +237,12 @@
             let roma = q.r.replace(/zi/g, "ji").replace(/zyu/g, "ju").replace(/hu/g, "fu").replace(/tsu/g, "tu").replace(/chi/g, "ti").replace(/shi/g, "si");
             return { k: q.k, r: roma };
         });
+
         let shuffledList = [], currentQ = null, charIndex = 0, score = 0, isStarted = false;
         const kanaElement = document.getElementById("kana-display"), romaElement = document.getElementById("roma-display"), scoreElement = document.getElementById("score"), inputElement = document.getElementById("hidden-input"), startBtn = document.getElementById("start-btn"), okBadge = document.getElementById("ok-badge");
         const keyButtons = document.querySelectorAll('.key-btn');
         const fingerDots = document.querySelectorAll('.finger-dot');
+
         function startGame() { isStarted = true; startBtn.style.display = "none"; inputElement.focus(); nextQuestion(); }
         function focusInput() { if (isStarted) inputElement.focus(); }
         function nextQuestion() {
@@ -247,6 +257,7 @@
                 speechSynthesis.speak(uttr);
             }
         }
+
         function updateDisplay() {
             kanaElement.innerText = currentQ.k;
             let html = "";
@@ -258,6 +269,7 @@
             romaElement.innerHTML = html;
             updateVisualAids();
         }
+
         function updateVisualAids() {
             keyButtons.forEach(btn => btn.classList.remove('highlight-key'));
             fingerDots.forEach(dot => { dot.classList.remove('active'); dot.style.backgroundColor = '#f0f0f0'; });
@@ -271,6 +283,7 @@
                 if (activeDot) { activeDot.classList.add('active'); activeDot.style.backgroundColor = fingerColors[dotId]; }
             }
         }
+
         inputElement.addEventListener("input", () => {
             if (!isStarted || okBadge.classList.contains("show")) { inputElement.value = ""; return; }
             const typed = inputElement.value.toLowerCase();
