@@ -24,7 +24,7 @@
         }
         .keyboard-row {
             display: flex;
-            justify-content: center;
+            justify-content: flex-start; /* 左寄せに変更 */
             margin-bottom: 8px;
             width: 100%;
         }
@@ -46,11 +46,18 @@
             transition: all 0.05s;
         }
 
-        /* 階段状のズレ（オフセット）設定 */
-        .row-2 { padding-left: 20px; } /* 2列目のズレ */
-        .row-3 { padding-left: 45px; } /* 3列目をさらに左へ（実質的に1列目から見て大きくずれる） */
+        /* 1. キーボードのズレ（オフセット）設定を修正 */
+        .row-1 { padding-left: 0px; }
+        .row-2 { padding-left: 15px; } /* 2列目を少し左へ */
+        .row-3 { padding-left: 35px; } /* 3列目をさらに調整 */
         
-        /* 左右のバランスを整えるための空要素 */
+        /* 2. ホームポジション（FとJ）にアンダーライン */
+        .home-pos {
+            text-decoration: underline;
+            text-underline-offset: 4px;
+            text-decoration-thickness: 2px;
+        }
+
         .spacer-short { flex: 0.5; max-width: 25px; pointer-events: none; }
         .spacer-long { flex: 1.2; max-width: 60px; pointer-events: none; }
 
@@ -103,13 +110,12 @@
             <div class="key-btn" data-key="a">A</div>
             <div class="key-btn" data-key="s">S</div>
             <div class="key-btn" data-key="d">D</div>
-            <div class="key-btn" data-key="f">F</div>
+            <div class="key-btn home-pos" data-key="f">F</div>
             <div class="key-btn" data-key="g">G</div>
             <div class="key-btn" data-key="h">H</div>
-            <div class="key-btn" data-key="j">J</div>
+            <div class="key-btn home-pos" data-key="j">J</div>
             <div class="key-btn" data-key="k">K</div>
             <div class="key-btn" data-key="l">L</div>
-            <div class="spacer-short"></div>
         </div>
         <div class="keyboard-row row-3">
             <div class="key-btn" data-key="z">Z</div>
@@ -119,13 +125,13 @@
             <div class="key-btn" data-key="b">B</div>
             <div class="key-btn" data-key="n">N</div>
             <div class="key-btn" data-key="m">M</div>
-            <div class="spacer-long"></div>
         </div>
     </div>
 
     <script>
+        // --- JavaScript部分は変更なし ---
         const originalQuestions = [
-            { k: "ようしょうきんほう", r: "yousyoukinhou" }, { k: "じんしの", r: "jinshino" }, { k: "たかはしかいせ", r: "takahashikaise" },
+            { k: "ようしょうきんほう", r: "yousyoukinhou" }, { k: "じんしの", r: "jinshino" }, { k: "たakahashikaise", r: "takahashikaise" },
             { k: "やまもとゆきの", r: "yamamotoyukino" }, { k: "ふるはしまな", r: "furuhasimana" }, { k: "はやししゅうご", r: "hayasisyuugo" },
             { k: "なかたにはるか", r: "nakataniharuka" }, { k: "おかだつぐみ", r: "okadatugumi" }, { k: "ささきたかまさ", r: "sasakitakamasa" },
             { k: "さだまさはるか", r: "sadamasaharuka" }, { k: "みずのえま", r: "mizunoema" }, { k: "おおむろほおり", r: "oomurohoori" },
