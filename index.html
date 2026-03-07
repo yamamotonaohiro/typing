@@ -3,135 +3,114 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-select=none">
     <meta name="robots" content="noindex,nofollow">
-    <title>Classmate Typing - Split Layout</title>
+    <title>Classmate Typing - Finger Guide</title>
     <style>
-        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; background: #fdfdfd; color: #333; margin: 0; min-height: 100vh; padding: 20px; box-sizing: border-box; }
-        #container { text-align: center; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 650px; position: relative; margin-bottom: 20px; }
-        #kana-display { font-size: 2.2rem; font-weight: bold; margin-bottom: 10px; color: #2c3e50; }
-        #roma-display { font-size: 1.6rem; letter-spacing: 0.1em; color: #95a5a6; min-height: 1.2em; text-transform: lowercase; }
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; background: #fdfdfd; color: #333; margin: 0; min-height: 100vh; padding: 10px; box-sizing: border-box; }
+        #container { text-align: center; background: white; padding: 20px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 700px; position: relative; margin-bottom: 15px; }
+        #kana-display { font-size: 2rem; font-weight: bold; margin-bottom: 5px; color: #2c3e50; }
+        #roma-display { font-size: 1.5rem; letter-spacing: 0.1em; color: #95a5a6; min-height: 1.2em; text-transform: lowercase; }
+        
+        /* 指ガイドの表示エリア */
+        #finger-guide { font-size: 1.1rem; font-weight: bold; margin-top: 10px; height: 30px; color: #7f8c8d; }
+        .guide-icon { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 8px; }
+
         .correct { color: #dcdde1; }
         .cursor { color: #e67e22; border-bottom: 3px solid #e67e22; }
         
-        #virtual-keyboard {
-            background: #d1d4d9;
-            padding: 15px;
-            border-radius: 12px;
-            width: 100%;
-            max-width: 650px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            user-select: none;
-            box-sizing: border-box;
-        }
-        .keyboard-row {
-            display: flex;
-            justify-content: flex-start;
-            margin-bottom: 8px;
-            width: 100%;
-        }
-        .key-btn {
-            background: #ffffff;
-            border: none;
-            border-radius: 6px;
-            flex: 1;
-            max-width: 50px;
-            height: 48px;
-            margin: 0 3px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #444;
-            box-shadow: 0 3px 0 #adb1b8;
-            transition: all 0.05s;
-        }
+        #virtual-keyboard { background: #d1d4d9; padding: 12px; border-radius: 12px; width: 100%; max-width: 700px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); user-select: none; }
+        .keyboard-row { display: flex; justify-content: flex-start; margin-bottom: 6px; }
+        .key-btn { background: #ffffff; border: none; border-radius: 6px; flex: 1; max-width: 45px; height: 45px; margin: 0 2px; display: flex; align-items: center; justify-content: center; font-size: 1rem; font-weight: bold; color: #444; box-shadow: 0 3px 0 #adb1b8; position: relative; }
 
-        /* 階段状のオフセット設定 */
+        /* 指ごとの色分け */
+        .pinky { border-top: 4px solid #ff79c6; }   /* 小指 */
+        .ring  { border-top: 4px solid #8be9fd; }   /* 薬指 */
+        .middle { border-top: 4px solid #50fa7b; }  /* 中指 */
+        .index { border-top: 4px solid #ffb86c; }   /* 人差し指 */
+
         .row-1 { padding-left: 0px; }
-        .row-2 { padding-left: 20px; }
-        .row-3 { padding-left: 45px; }
-        
-        /* 左右を離すための隙間（スペーサー） */
-        .hand-gap {
-            width: 40px; /* 左右のグループの間の距離 */
-            flex-shrink: 0;
-        }
+        .row-2 { padding-left: 15px; }
+        .row-3 { padding-left: 40px; }
+        .hand-gap { width: 35px; flex-shrink: 0; }
 
-        .home-pos {
-            text-decoration: underline;
-            text-underline-offset: 4px;
-            text-decoration-thickness: 2px;
-        }
+        .home-pos { text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 2px; }
+        .highlight-key { background-color: #444 !important; color: white !important; transform: scale(1.05); box-shadow: 0 0 10px rgba(0,0,0,0.3) !important; }
 
-        .highlight-key {
-            background-color: #e67e22 !important;
-            color: white !important;
-            box-shadow: 0 0 12px rgba(230,126,34,0.7) !important;
-            transform: scale(1.05);
-        }
-
-        #ok-badge {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0);
-            font-size: 4rem; font-weight: bold; color: #27ae60; background: rgba(255,255,255,0.9);
-            padding: 15px 40px; border-radius: 100px; border: 8px solid #27ae60;
-            z-index: 20; pointer-events: none; transition: transform 0.2s;
-        }
+        #ok-badge { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0); font-size: 3rem; font-weight: bold; color: #27ae60; background: rgba(255,255,255,0.9); padding: 10px 30px; border-radius: 100px; border: 6px solid #27ae60; z-index: 20; transition: transform 0.2s; }
         #ok-badge.show { transform: translate(-50%, -50%) scale(1); }
-        #hidden-input { position: absolute; opacity: 0; pointer-events: none; }
-        #start-btn { background: #e67e22; color: white; border: none; padding: 15px 40px; border-radius: 50px; font-size: 1.3rem; font-weight: bold; cursor: pointer; margin-top: 20px; }
-        .info { font-size: 0.75rem; color: #7f8c8d; margin-top: 15px; font-weight: bold; }
+        #start-btn { background: #e67e22; color: white; border: none; padding: 12px 30px; border-radius: 50px; font-size: 1.2rem; font-weight: bold; cursor: pointer; margin-top: 15px; }
+        #hidden-input { position: absolute; opacity: 0; }
     </style>
 </head>
 <body onclick="focusInput()">
 
     <div id="container">
         <div id="ok-badge">OK!</div>
-        <div id="kana-display">&#12479;&#12483;&#12503;&#12375;&#12390;&#38283;&#22987;</div>
-        <div id="roma-display">tap to start</div>
+        <div id="kana-display">タイピング練習</div>
+        <div id="roma-display">press START</div>
+        <div id="finger-guide"></div>
         <div id="score-board">SCORE: <span id="score">0</span> / 23</div>
         <button id="start-btn" onclick="startGame()">START</button>
-        <div class="info">JI / JU / FU / TU / TI / SI / SYE 固定</div>
     </div>
 
     <input type="text" id="hidden-input" autocomplete="off">
 
     <div id="virtual-keyboard">
         <div class="keyboard-row row-1">
-            <div class="key-btn" data-key="q">Q</div>
-            <div class="key-btn" data-key="w">W</div>
-            <div class="key-btn" data-key="e">E</div>
-            <div class="key-btn" data-key="r">R</div>
-            <div class="key-btn" data-key="t">T</div>
-            <div class="hand-gap"></div> <div class="key-btn" data-key="y">Y</div>
-            <div class="key-btn" data-key="u">U</div>
-            <div class="key-btn" data-key="i">I</div>
-            <div class="key-btn" data-key="o">O</div>
-            <div class="key-btn" data-key="p">P</div>
+            <div class="key-btn pinky" data-key="q">Q</div>
+            <div class="key-btn ring" data-key="w">W</div>
+            <div class="key-btn middle" data-key="e">E</div>
+            <div class="key-btn index" data-key="r">R</div>
+            <div class="key-btn index" data-key="t">T</div>
+            <div class="hand-gap"></div>
+            <div class="key-btn index" data-key="y">Y</div>
+            <div class="key-btn index" data-key="u">U</div>
+            <div class="key-btn middle" data-key="i">I</div>
+            <div class="key-btn ring" data-key="o">O</div>
+            <div class="key-btn pinky" data-key="p">P</div>
         </div>
         <div class="keyboard-row row-2">
-            <div class="key-btn" data-key="a">A</div>
-            <div class="key-btn" data-key="s">S</div>
-            <div class="key-btn" data-key="d">D</div>
-            <div class="key-btn home-pos" data-key="f">F</div>
-            <div class="key-btn" data-key="g">G</div>
-            <div class="hand-gap"></div> <div class="key-btn" data-key="h">H</div>
-            <div class="key-btn home-pos" data-key="j">J</div>
-            <div class="key-btn" data-key="k">K</div>
-            <div class="key-btn" data-key="l">L</div>
+            <div class="key-btn pinky" data-key="a">A</div>
+            <div class="key-btn ring" data-key="s">S</div>
+            <div class="key-btn middle" data-key="d">D</div>
+            <div class="key-btn index home-pos" data-key="f">F</div>
+            <div class="key-btn index" data-key="g">G</div>
+            <div class="hand-gap"></div>
+            <div class="key-btn index" data-key="h">H</div>
+            <div class="key-btn index home-pos" data-key="j">J</div>
+            <div class="key-btn middle" data-key="k">K</div>
+            <div class="key-btn ring" data-key="l">L</div>
         </div>
         <div class="keyboard-row row-3">
-            <div class="key-btn" data-key="z">Z</div>
-            <div class="key-btn" data-key="x">X</div>
-            <div class="key-btn" data-key="c">C</div>
-            <div class="key-btn" data-key="v">V</div>
-            <div class="key-btn" data-key="b">B</div>
-            <div class="hand-gap"></div> <div class="key-btn" data-key="n">N</div>
-            <div class="key-btn" data-key="m">M</div>
+            <div class="key-btn pinky" data-key="z">Z</div>
+            <div class="key-btn ring" data-key="x">X</div>
+            <div class="key-btn middle" data-key="c">C</div>
+            <div class="key-btn index" data-key="v">V</div>
+            <div class="key-btn index" data-key="b">B</div>
+            <div class="hand-gap"></div>
+            <div class="key-btn index" data-key="n">N</div>
+            <div class="key-btn middle" data-key="m">M</div>
         </div>
     </div>
 
     <script>
-        // ロジック部分は変更なし
+        const fingerMap = {
+            q:'左小指', a:'左小指', z:'左小指',
+            w:'左薬指', s:'左薬指', x:'左薬指',
+            e:'左中指', d:'左中指', c:'左中指',
+            r:'左人差指', f:'左人差指', v:'左人差指', t:'左人差指', g:'左人差指', b:'左人差指',
+            y:'右人差指', h:'右人差指', n:'右人差指', u:'右人差指', j:'右人差指',
+            i:'右中指', k:'右中指', m:'右中指',
+            o:'右薬指', l:'右薬指',
+            p:'右小指'
+        };
+
+        const fingerColors = {
+            '左小指':'#ff79c6', '右小指':'#ff79c6',
+            '左薬指':'#8be9fd', '右薬指':'#8be9fd',
+            '左中指':'#50fa7b', '右中指':'#50fa7b',
+            '左人差指':'#ffb86c', '右人差指':'#ffb86c'
+        };
+
         const originalQuestions = [
             { k: "ようしょうきんほう", r: "yousyoukinhou" }, { k: "じんしの", r: "jinshino" }, { k: "たかはしかいせ", r: "takahashikaise" },
             { k: "やまもとゆきの", r: "yamamotoyukino" }, { k: "ふるはしまな", r: "furuhasimana" }, { k: "はやししゅうご", r: "hayasisyuugo" },
@@ -149,42 +128,23 @@
         });
 
         let shuffledList = [], currentQ = null, charIndex = 0, score = 0, isStarted = false;
-        const kanaElement = document.getElementById("kana-display"), romaElement = document.getElementById("roma-display"), scoreElement = document.getElementById("score"), inputElement = document.getElementById("hidden-input"), startBtn = document.getElementById("start-btn"), okBadge = document.getElementById("ok-badge");
+        const kanaElement = document.getElementById("kana-display"), romaElement = document.getElementById("roma-display"), scoreElement = document.getElementById("score"), inputElement = document.getElementById("hidden-input"), startBtn = document.getElementById("start-btn"), okBadge = document.getElementById("ok-badge"), guideElement = document.getElementById("finger-guide");
         const keyButtons = document.querySelectorAll('.key-btn');
 
-        function shuffle(array) {
-            let arr = [...array];
-            for (let i = arr.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [arr[i], arr[j]] = [arr[j], arr[i]];
-            }
-            return arr;
-        }
-
-        function speak(text) {
-            if (!window.speechSynthesis) return;
-            speechSynthesis.cancel();
-            const uttr = new SpeechSynthesisUtterance(text);
-            uttr.lang = 'ja-JP';
-            speechSynthesis.speak(uttr);
-        }
-
-        function startGame() {
-            isStarted = true;
-            startBtn.style.display = "none";
-            inputElement.focus();
-            nextQuestion();
-        }
-
+        function startGame() { isStarted = true; startBtn.style.display = "none"; inputElement.focus(); nextQuestion(); }
         function focusInput() { if (isStarted) inputElement.focus(); }
 
         function nextQuestion() {
-            if (shuffledList.length === 0) shuffledList = shuffle(finalizedQuestions);
+            if (shuffledList.length === 0) shuffledList = [...finalizedQuestions].sort(() => Math.random() - 0.5);
             currentQ = shuffledList.pop();
             charIndex = 0;
             updateDisplay();
-            speak(currentQ.k);
-            inputElement.value = "";
+            if (window.speechSynthesis) {
+                speechSynthesis.cancel();
+                const uttr = new SpeechSynthesisUtterance(currentQ.k);
+                uttr.lang = 'ja-JP';
+                speechSynthesis.speak(uttr);
+            }
         }
 
         function updateDisplay() {
@@ -196,23 +156,20 @@
                 else html += `<span>${currentQ.r[i]}</span>`;
             }
             romaElement.innerHTML = html;
-            highlightKey();
+            updateGuide();
         }
 
-        function highlightKey() {
+        function updateGuide() {
             keyButtons.forEach(btn => btn.classList.remove('highlight-key'));
-            if (!currentQ) return;
             const targetChar = currentQ.r[charIndex];
             const targetBtn = document.querySelector(`.key-btn[data-key="${targetChar}"]`);
-            if (targetBtn) targetBtn.classList.add('highlight-key');
-        }
-
-        function showOk() {
-            okBadge.classList.add("show");
-            setTimeout(() => {
-                okBadge.classList.remove("show");
-                nextQuestion();
-            }, 600);
+            
+            if (targetBtn) {
+                targetBtn.classList.add('highlight-key');
+                const fingerName = fingerMap[targetChar];
+                const color = fingerColors[fingerName];
+                guideElement.innerHTML = `<span class="guide-icon" style="background:${color}"></span>次は：${fingerName}`;
+            }
         }
 
         inputElement.addEventListener("input", (e) => {
@@ -224,11 +181,13 @@
                 if (charIndex === currentQ.r.length) {
                     score++;
                     scoreElement.innerText = score;
-                    showOk();
+                    okBadge.classList.add("show");
+                    setTimeout(() => { okBadge.classList.remove("show"); nextQuestion(); }, 600);
                 } else {
                     updateDisplay();
                 }
             }
+            inputElement.value = "";
         });
     </script>
 </body>
