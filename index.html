@@ -6,41 +6,44 @@
     <title>タッチタイピングの練習</title>
     <style>
         body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; background: #fdfdfd; color: #333; margin: 0; min-height: 100vh; padding: 10px; box-sizing: border-box; }
-        #container { text-align: center; background: white; padding: 20px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 700px; position: relative; margin-bottom: 30px; z-index: 10; }
-        #title-display { font-size: 2.2rem; font-weight: bold; margin-bottom: 5px; color: #2c3e50; }
-        #sub-display { font-size: 1.6rem; letter-spacing: 0.1em; color: #95a5a6; min-height: 1.2em; }
-        #roma-display { font-size: 1.6rem; letter-spacing: 0.1em; color: #95a5a6; min-height: 1.2em; text-transform: lowercase; margin-top: 5px; }
+        #container { text-align: center; background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 720px; position: relative; margin-bottom: 30px; z-index: 10; }
         
-        #course-select { margin-top: 20px; display: flex; gap: 15px; justify-content: center; }
-        .course-btn { background: #3498db; color: white; border: none; padding: 12px 25px; border-radius: 10px; font-size: 1.1rem; cursor: pointer; transition: background 0.2s; font-weight: bold; }
+        #title-display { font-size: 1.8rem; font-weight: bold; margin-bottom: 15px; color: #7f8c8d; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        
+        #question-box {
+            background: #fafafa;
+            border: 2px solid #eaeeef;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 15px 0;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        #sub-display { font-size: 2.8rem; font-weight: bold; margin-bottom: 10px; color: #2c3e50; transition: all 0.2s; }
+        #roma-display { font-size: 2rem; letter-spacing: 0.15em; color: #bdc3c7; min-height: 1.2em; text-transform: lowercase; }
+        
+        #course-select { margin-top: 10px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+        .course-btn { background: #3498db; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-size: 1rem; cursor: pointer; transition: background 0.2s; font-weight: bold; }
         .course-btn:hover { background: #2980b9; }
 
-        #status-area { display: none; align-items: center; justify-content: center; gap: 20px; margin-top: 15px; }
-        #score-board { font-weight: bold; color: #7f8c8d; }
+        #status-area { display: flex; align-items: center; justify-content: center; gap: 20px; margin-top: 20px; }
+        #score-board { font-weight: bold; color: #7f8c8d; font-size: 1.2rem; }
         #audio-toggle { background: #ffffff; border: 2px solid #e67e22; border-radius: 50px; padding: 6px 18px; cursor: pointer; font-size: 0.9rem; color: #e67e22; font-weight: bold; }
 
-        #ok-badge { position: absolute; top: 105%; left: 50%; transform: translateX(-50%) scale(0); font-size: 3rem; font-weight: bold; color: #27ae60; background: white; padding: 10px 40px; border-radius: 100px; border: 6px solid #27ae60; z-index: 100; transition: transform 0.2s, opacity 0.2s; pointer-events: none; box-shadow: 0 5px 15px rgba(0,0,0,0.1); opacity: 0; }
-        #ok-badge.show { transform: translateX(-50%) scale(1.2); opacity: 1; }
+        #ok-badge { position: absolute; top: 105%; left: 50%; transform: translateX(-50%) scale(0); font-size: 3.5rem; font-weight: bold; color: #27ae60; background: white; padding: 10px 50px; border-radius: 100px; border: 6px solid #27ae60; z-index: 100; transition: transform 0.2s, opacity 0.2s; pointer-events: none; box-shadow: 0 5px 20px rgba(0,0,0,0.1); opacity: 0; }
+        #ok-badge.show { transform: translateX(-50%) scale(1.1); opacity: 1; }
 
-        /* キーボードエリア */
         #keyboard-area { width: 920px; background: #d1d4d9; padding: 30px 0; border-radius: 12px; display: flex; flex-direction: column; align-items: center; position: relative; }
         .keyboard-row { display: flex; justify-content: center; width: 100%; margin-bottom: 8px; }
-        
         .hand-gap { width: 80px; } 
         .row-1 { transform: translateX(-15px); }
         .row-2 { transform: translateX(10px); }
         .row-3 { transform: translateX(35px); }
 
         .key-btn { border: 2px solid rgba(0,0,0,0.05); border-radius: 6px; width: 55px; height: 55px; margin: 0 3px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: bold; color: #444; position: relative; flex-shrink: 0; box-sizing: border-box; }
-        
-        /* ホームポジション：太枠と下線で目立たせる */
-        .home-pos { 
-            border: 3px solid #555 !important; 
-            text-decoration: underline; 
-            text-decoration-thickness: 3px; 
-            text-underline-offset: 4px; 
-            color: #000; 
-        }
+        .home-pos { border: 3px solid #555 !important; text-decoration: underline; text-decoration-thickness: 3px; text-underline-offset: 4px; color: #000; }
 
         .pinky { background-color: #ffcceb; box-shadow: 0 3px 0 #ff79c6; }
         .ring { background-color: #d1f7ff; box-shadow: 0 3px 0 #8be9fd; }
@@ -48,8 +51,7 @@
         .index { background-color: #ffebd1; box-shadow: 0 3px 0 #ffb86c; }
         .highlight-key { background-color: #444 !important; color: white !important; transform: scale(1.05); border-color: #000 !important; }
 
-        /* フィンガーナビゲーター：左手の位置を右へ微調整 */
-        #finger-navigator { display: flex; justify-content: center; margin-top: 20px; padding: 10px 0 0 0; background: rgba(255,255,255,0.25); border-radius: 15px; align-items: flex-end; width: fit-content; transform: translateX(12px); }
+        #finger-navigator { display: flex; justify-content: center; margin-top: 20px; padding: 10px 0 0 0; background: rgba(255,255,255,0.25); border-radius: 15px; align-items: flex-end; width: fit-content; transform: translateX(8px); }
         .nav-group { display: flex; width: 305px; }
         .dot-container { width: 61px; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; position: relative; height: 95px; }
         .finger-shape { position: absolute; bottom: 0; width: 42px; background: rgba(0, 0, 0, 0.08); border-radius: 20px 20px 5px 5px; z-index: 1; }
@@ -60,7 +62,7 @@
         #dot-L3, #dot-R3 { top: 10px; background-color: #50fa7b; } 
         #dot-L2, #dot-R2 { top: 20px; background-color: #ffb86c; } 
         .finger-dot.active { transform: scale(2.4); opacity: 1; border-color: rgba(255,255,255,0.9); box-shadow: 0 0 15px rgba(0,0,0,0.3); }
-        .hand-separator { width: 115px; } 
+        .hand-separator { width: 85px; } 
         #hidden-input { position: absolute; opacity: 0; pointer-events: none; left: -9999px; }
     </style>
 </head>
@@ -69,12 +71,17 @@
     <div id="container">
         <div id="ok-badge">OK!</div>
         <div id="title-display">タッチタイピングの練習</div>
-        <div id="sub-display">コースを選んでスタート</div>
-        <div id="roma-display"></div>
+        
+        <div id="question-box">
+            <div id="sub-display">コースを選んでスタート</div>
+            <div id="roma-display"></div>
+        </div>
+        
         <div id="course-select">
             <button class="course-btn" onclick="selectCourse(0)">２年１組</button>
             <button class="course-btn" onclick="selectCourse(1)">都道府県</button>
         </div>
+
         <div id="status-area">
             <div id="score-board">SCORE: <span id="score">0</span></div>
             <button id="audio-toggle" onclick="toggleAudio()">
@@ -134,17 +141,18 @@
             ["のろのりこ", "しが"]
         ];
 
+        // 「じゅ」をjuにするなど、表示を最適化
         const kanaMap = {
             'あ':'a','い':'i','う':'u','え':'e','お':'o','か':'ka','き':'ki','く':'ku','け':'ke','こ':'ko',
             'さ':'sa','し':'si','す':'su','せ':'se','そ':'so','た':'ta','ち':'ti','つ':'tu','て':'te','と':'to',
-            'な':'na','に':'ni','ぬ':'nu','ね':'ne','の':'no','は':'ha','ひ':'hi','ふ':'hu','へ':'he','ほ':'ho',
+            'な':'na','に':'ni','ぬ':'nu','ね':'ne','の':'no','は':'ha','ひ':'hi','ふ':'fu','へ':'he','ほ':'ho',
             'ま':'ma','み':'mi','む':'mu','め':'me','も':'mo','や':'ya','ゆ':'yu','よ':'yo','ら':'ra','り':'ri',
             'る':'ru','れ':'re','ろ':'ro','わ':'wa','を':'wo','が':'ga','ぎ':'gi','ぐ':'gu','げ':'ge','ご':'go',
             'ざ':'za','じ':'zi','ず':'zu','ぜ':'ze','ぞ':'zo','だ':'da','ぢ':'zi','づ':'zu','で':'de','ど':'do',
             'ば':'ba','び':'bi','ぶ':'bu','べ':'be','ぼ':'bo','ぱ':'pa','ぴ':'pi','ぷ':'pu','ぺ':'pe','ぽ':'po',
             'きゃ':'kya','きゅ':'kyu','きょ':'kyo','しゃ':'sya','しゅ':'syu','しょ':'syo','ちゃ':'tya','ちゅ':'tyu','ちょ':'tyo',
             'にゃ':'nya','にゅ':'nyu','にょ':'nyo','ひゃ':'hya','ひゅ':'hyu','ひょ':'hyo','みゃ':'mya','みゅ':'myu','みょ':'myo',
-            'りゃ':'rya','りゅ':'ryu','りょ':'ryo','ぎゃ':'gya','ぎゅ':'gyu','ぎょ':'gyo','じゃ':'zya','じゅ':'zyu','じょ':'zyo',
+            'りゃ':'rya','りゅ':'ryu','りょ':'ryo','ぎゃ':'gya','ぎゅ':'gyu','ぎょ':'gyo','じゃ':'ja','じゅ':'ju','じょ':'jo',
             'びゃ':'bya','びゅ':'byu','びょ':'byo','ぴゃ':'pya','ぴゅ':'pyu','ぴょ':'pyo',
             'しぇ':'sye','じぇ':'zye','ちぇ':'tye','ふぇ':'he','ふぉ':'ho','てぃ':'ti','てゅ':'tyu','うぃ':'wi','うぇ':'we','ん':'n' 
         };
@@ -176,10 +184,11 @@
         const fingerToDot = {'q':'L5','a':'L5','z':'L5','w':'L4','s':'L4','x':'L4','e':'L3','d':'L3','c':'L3','r':'L2','f':'L2','v':'L2','t':'L2','g':'L2','b':'L2','y':'R2','h':'R2','n':'R2','u':'R2','j':'R2','m':'R2','i':'R3','k':'R3','o':'R4','l':'R4','p':'R5'};
 
         function selectCourse(colIndex) {
+            score = 0;
+            scoreElement.innerText = score;
             shuffledList = rawData.map(d => ({ k: d[colIndex], r: toRoma(d[colIndex]) })).sort(() => Math.random() - 0.5);
-            document.getElementById("course-select").style.display = "none";
-            document.getElementById("status-area").style.display = "flex";
-            isStarted = true; nextQuestion();
+            isStarted = true; 
+            nextQuestion();
         }
 
         function nextQuestion() {
@@ -195,7 +204,6 @@
 
         function updateDisplay() {
             subDisplay.innerText = currentQ.k;
-            subDisplay.style.color = "#2c3e50"; subDisplay.style.fontWeight = "bold";
             let html = "";
             for (let i = 0; i < currentQ.r.length; i++) {
                 if (i < charIndex) html += `<span style="color:#dcdde1">${currentQ.r[i]}</span>`;
@@ -209,6 +217,7 @@
         function updateVisualAids() {
             document.querySelectorAll('.key-btn').forEach(b => b.classList.remove('highlight-key'));
             document.querySelectorAll('.finger-dot').forEach(d => d.classList.remove('active'));
+            if(!currentQ) return;
             const targetChar = currentQ.r[charIndex];
             const targetBtn = document.querySelector(`.key-btn[data-key="${targetChar}"]`);
             if (targetBtn) {
