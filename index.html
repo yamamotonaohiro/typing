@@ -7,95 +7,91 @@
     <style>
         body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; background: #fdfdfd; color: #333; margin: 0; min-height: 100vh; padding: 2px; box-sizing: border-box; overflow-x: hidden; }
         #container { text-align: center; background: white; padding: 10px 20px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 850px; position: relative; margin-bottom: 2px; z-index: 10; }
-        #top-settings { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 8px; margin-bottom: 8px; flex-wrap: wrap; gap: 10px; }
-        #course-area { display: flex; align-items: center; gap: 8px; }
-        .course-btn { color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; font-weight: bold; opacity: 0.8; }
-        .btn-green { background: #27ae60; } .btn-blue { background: #3498db; } .btn-red { background: #e74c3c; }
-        .course-btn:hover { opacity: 1; transform: translateY(-1px); }
+        #top-settings { display: flex; flex-direction: column; border-bottom: 1px solid #eee; padding-bottom: 8px; margin-bottom: 8px; gap: 10px; }
+        #header-status { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+        #course-container { width: 100%; overflow-x: auto; white-space: nowrap; padding: 10px 0; -webkit-overflow-scrolling: touch; }
+        #course-select { display: inline-flex; gap: 10px; padding: 2px; }
+        
+        .course-btn { color: white; border: none; padding: 10px 18px; border-radius: 8px; font-size: 0.9rem; cursor: pointer; transition: all 0.2s; font-weight: bold; opacity: 0.8; flex-shrink: 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .btn-green { background: #27ae60; } 
+        .btn-blue { background: #3498db; } 
+        .btn-red { background: #e74c3c; }
+        .course-btn:hover { opacity: 1; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
         .course-btn.active { outline: 3px solid #f39c12; outline-offset: 2px; opacity: 1; transform: scale(1.05); }
 
-        /* 【修正：進捗表示の日本語化】 */
-        #score-board { font-weight: bold; color: #2c3e50; font-size: 1.0rem; min-width: 160px; text-align: right; }
-        
-        #audio-toggle { background: #ffffff; border: 2px solid #e67e22; border-radius: 50px; padding: 3px 12px; cursor: pointer; font-size: 0.8rem; color: #e67e22; font-weight: bold; }
-        #question-box { background: #fafafa; border: 2px solid #eaeeef; border-radius: 15px; padding: 5px 10px; margin: 0 0 2px 0; min-height: 85px; display: flex; flex-direction: column; justify-content: center; position: relative; overflow: visible; }
-        #sub-display { font-size: 2.2rem; font-weight: bold; margin-bottom: 2px; color: #2c3e50; }
-        #roma-display { font-size: 1.7rem; letter-spacing: 0.15em; color: #bdc3c7; min-height: 1.1em; text-transform: lowercase; }
+        #score-board { font-weight: bold; color: #2c3e50; font-size: 1.1rem; }
+        #audio-toggle { background: #ffffff; border: 2px solid #e67e22; border-radius: 50px; padding: 4px 15px; cursor: pointer; font-size: 0.85rem; color: #e67e22; font-weight: bold; }
+        #question-box { background: #fafafa; border: 2px solid #eaeeef; border-radius: 15px; padding: 15px; margin: 0 0 10px 0; min-height: 110px; display: flex; flex-direction: column; justify-content: center; position: relative; }
+        #sub-display { font-size: 2.4rem; font-weight: bold; margin-bottom: 5px; color: #2c3e50; }
+        #roma-display { font-size: 1.8rem; letter-spacing: 0.15em; color: #bdc3c7; min-height: 1.1em; text-transform: lowercase; }
 
-        #result-screen {
-            display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255, 255, 255, 0.98); border-radius: 20px; z-index: 200;
-            flex-direction: column; justify-content: center; align-items: center;
-            animation: fadeIn 0.4s ease-out; padding: 10px; box-sizing: border-box;
-        }
-        #result-screen h2 { font-size: 2.0rem; margin: 0; color: #e67e22; animation: bounce 0.8s infinite alternate; }
-        @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-5px); } }
-        #result-rank { font-size: 1.4rem; font-weight: bold; color: #f1c40f; margin: 2px 0; }
-        #result-text { font-size: 1.1rem; margin: 5px 0; }
-        .result-btns { display: flex; gap: 10px; margin-top: 10px; }
-        .btn-gray { background: #95a5a6 !important; }
+        #result-screen { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.98); border-radius: 20px; z-index: 200; flex-direction: column; justify-content: center; align-items: center; padding: 20px; animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        #result-screen h2 { font-size: 3rem; color: #e67e22; margin: 0; animation: popUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes popUp { 0% { transform: scale(0.5); } 100% { transform: scale(1); } }
+        #result-rank { font-size: 2rem; font-weight: bold; color: #f1c40f; margin: 15px 0; text-shadow: 2px 2px 0 rgba(0,0,0,0.1); }
 
-        .confetti { position: fixed; width: 8px; height: 8px; z-index: 1000; pointer-events: none; animation: confetti-fall 3s linear forwards; }
-        @keyframes confetti-fall { 0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+        .confetti { position: fixed; width: 10px; height: 10px; pointer-events: none; z-index: 1000; animation: confettiFall 3s linear forwards; }
+        @keyframes confettiFall { 0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; } 100% { transform: translateY(110vh) rotate(720deg); opacity: 0; } }
 
-        .ok-effect { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 5rem; font-weight: 900; color: #27ae60; text-shadow: 0 0 20px #fff; animation: giantPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; pointer-events: none; z-index: 100; }
-        @keyframes giantPop { 0% { opacity: 0; transform: translate(-50%, -30%) scale(0.3); } 50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); } 100% { opacity: 0; transform: translate(-50%, -70%) scale(1.2); } }
-
-        #keyboard-area { width: 920px; background: #d1d4d9; padding: 10px 0; border-radius: 12px; display: flex; flex-direction: column; align-items: center; position: relative; margin-top: 12px; }
+        #keyboard-area { width: 920px; background: #d1d4d9; padding: 15px 0; border-radius: 12px; display: flex; flex-direction: column; align-items: center; position: relative; margin-top: 15px; }
         .keyboard-row { display: flex; justify-content: center; width: 100%; margin-bottom: 4px; }
-        .key-btn { border: 2px solid rgba(0,0,0,0.05); border-radius: 6px; width: 55px; height: 55px; margin: 0 3px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: bold; color: #444; position: relative; flex-shrink: 0; box-sizing: border-box; transition: all 0.1s ease; }
-        .home-pos { border: 3px solid #555 !important; box-shadow: inset 0 -4px 0 #888; }
-        .home-pos::after { content: ""; position: absolute; bottom: 8px; width: 20px; height: 4px; background: #555; border-radius: 2px; }
-        .hand-gap { width: 80px; } 
-
+        .key-btn { border: 2px solid rgba(0,0,0,0.05); border-radius: 6px; width: 55px; height: 55px; margin: 0 3px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: bold; color: #444; position: relative; flex-shrink: 0; box-sizing: border-box; }
+        
         .pinky { background-color: #ffcceb; border-bottom: 3px solid #ff79c6; }
         .ring { background-color: #d1f7ff; border-bottom: 3px solid #8be9fd; }
         .middle { background-color: #d4fee0; border-bottom: 3px solid #50fa7b; }
         .index { background-color: #ffebd1; border-bottom: 3px solid #ffb86c; }
-        .pinky.highlight-key { background-color: #ff33b5 !important; color: white !important; box-shadow: 0 0 20px #ff33b5; transform: scale(1.1); z-index: 5; }
-        .ring.highlight-key { background-color: #00d4ff !important; color: white !important; box-shadow: 0 0 20px #00d4ff; transform: scale(1.1); z-index: 5; }
-        .middle.highlight-key { background-color: #00ff44 !important; color: white !important; box-shadow: 0 0 20px #00ff44; transform: scale(1.1); z-index: 5; }
-        .index.highlight-key { background-color: #ff9900 !important; color: white !important; box-shadow: 0 0 20px #ff9900; transform: scale(1.1); z-index: 5; }
 
-        #finger-navigator { display: flex; justify-content: center; margin-top: 10px; padding: 0; background: rgba(255,255,255,0.2); border-radius: 15px; align-items: flex-end; width: fit-content; transform: translateX(12px); }
-        .nav-group { display: flex; }
-        .hand-separator { width: 120px; } 
-        .dot-container { width: 61px; display: flex; flex-direction: column; align-items: center; position: relative; height: 80px; }
-        .finger-shape { position: absolute; bottom: 0; width: 42px; background: rgba(0, 0, 0, 0.08); border-radius: 20px 20px 5px 5px; z-index: 1; }
-        .f-pinky { height: 45px; } .f-ring { height: 60px; } .f-middle { height: 75px; } .f-index { height: 63px; } .f-thumb { height: 35px; } 
-        .finger-dot { width: 18px; height: 18px; border-radius: 50%; border: 2px solid rgba(0,0,0,0.1); margin-top: 5px; z-index: 2; position: relative; opacity: 0.7; }
-        #dot-L5, #dot-R5 { top: 32px; background-color: #ff79c6; } #dot-L4, #dot-R4 { top: 12px; background-color: #8be9fd; } #dot-L3, #dot-R3 { top: 5px; background-color: #50fa7b; } #dot-L2, #dot-R2 { top: 10px; background-color: #ffb86c; } 
-        .finger-dot.active { transform: scale(2.2); opacity: 1; box-shadow: 0 0 10px rgba(0,0,0,0.3); }
+        .home-pos::after { content: ""; position: absolute; bottom: 8px; width: 20px; height: 4px; background: #999; border-radius: 2px; }
+        .hand-gap { width: 80px; } 
+
+        .pinky.highlight-key { background-color: #ff33b5 !important; color: white !important; }
+        .ring.highlight-key { background-color: #00d4ff !important; color: white !important; }
+        .middle.highlight-key { background-color: #00ff44 !important; color: white !important; }
+        .index.highlight-key { background-color: #ff9900 !important; color: white !important; }
+
+        #finger-navigator { display: flex; justify-content: center; margin-top: 25px; align-items: flex-end; }
+        .dot-container { width: 60px; display: flex; flex-direction: column; align-items: center; position: relative; height: 110px; }
+        .finger-shape { position: absolute; bottom: 0; width: 40px; background: rgba(0, 0, 0, 0.06); border-radius: 20px 20px 5px 5px; }
+        .finger-dot { width: 18px; height: 18px; border-radius: 50%; z-index: 2; position: absolute; opacity: 0.6; border: 1px solid rgba(0,0,0,0.1); }
+        
+        .f-pinky { height: 60px; }  #dot-L5, #dot-R5 { bottom: 45px; background-color: #ff79c6; }
+        .f-ring  { height: 85px; }  #dot-L4, #dot-R4 { bottom: 70px; background-color: #8be9fd; }
+        .f-middle { height: 100px; } #dot-L3, #dot-R3 { bottom: 85px; background-color: #50fa7b; }
+        .f-index  { height: 88px; }  #dot-L2, #dot-R2 { bottom: 73px; background-color: #ffb86c; }
+        
+        .finger-dot.active { transform: scale(2.0); opacity: 1; box-shadow: 0 0 12px rgba(0,0,0,0.3); z-index: 10; }
         #hidden-input { position: absolute; opacity: 0; left: -9999px; }
+
+        .ok-effect { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 5rem; font-weight: 900; color: #27ae60; animation: giantPop 0.5s forwards; pointer-events: none; }
+        @keyframes giantPop { 0% { opacity: 0; transform: translate(-50%, -30%) scale(0.3); } 100% { opacity: 0; transform: translate(-50%, -70%) scale(1.2); } }
     </style>
 </head>
 <body onclick="focusInput()">
     <div id="container">
         <div id="result-screen">
-            <h2>お疲れ様でした！</h2>
-            <div id="result-rank">すばらしい！！</div>
-            <p id="result-text"></p>
-            <div class="result-btns">
-                <button class="course-btn btn-blue" onclick="resetGame()">もう一度練習する</button>
-                <button class="course-btn btn-gray" onclick="backToMenu()">メニューに戻る</button>
+            <h2>おめでとう！！</h2>
+            <div id="result-rank"></div>
+            <p id="result-text" style="font-size: 1.2rem; font-weight: bold;"></p>
+            <div style="display: flex; gap: 15px; margin-top: 20px;">
+                <button class="course-btn btn-blue" onclick="resetGame()" style="padding: 12px 24px; font-size: 1.1rem;">もう一度やる！</button>
+                <button class="course-btn" style="background:#95a5a6; padding: 12px 24px; font-size: 1.1rem;" onclick="backToMenu()">メニューへ</button>
             </div>
         </div>
 
         <div id="top-settings">
-            <div id="course-area">
-                <span style="font-size:0.8rem;font-weight:bold;color:#7f8c8d;">コース：</span>
-                <div id="course-select">
-                    <button id="btn-course-3" class="course-btn btn-green" onclick="selectCourse(3)">くだもの (10問)</button>
-                    <button id="btn-course-0" class="course-btn btn-blue" onclick="selectCourse(0)">２年１組 (25問)</button>
-                    <button id="btn-course-2" class="course-btn btn-blue" onclick="selectCourse(2)">５０音 (46問)</button>
-                    <button id="btn-course-1" class="course-btn btn-red" onclick="selectCourse(1)">都道府県 (47問)</button>
-                </div>
+            <div id="header-status">
+                <div id="score-board">できた数：<span id="current-count">0</span> / ぜんぶで：<span id="total-count">0</span></div>
+                <button id="audio-toggle" onclick="toggleAudio()">音: <span id="audio-text">ON</span></button>
             </div>
-            <div id="score-board">のこり：<span id="current-count">0</span> / ぜんぶで：<span id="total-count">0</span></div>
-            <button id="audio-toggle" onclick="toggleAudio()">音: <span id="audio-text">ON</span></button>
+            <div id="course-container">
+                <div id="course-select"></div>
+            </div>
         </div>
+        
         <div id="question-box">
-            <div id="sub-display">コースを選んでスタート</div>
+            <div id="sub-display">コースをえらんでね</div>
             <div id="roma-display"></div>
         </div>
     </div>
@@ -119,16 +115,14 @@
             </div>
         </div>
         <div id="finger-navigator">
-            <div class="nav-group">
+            <div style="display:flex">
                 <div class="dot-container"><div class="finger-dot" id="dot-L5"></div><div class="finger-shape f-pinky"></div></div>
                 <div class="dot-container"><div class="finger-dot" id="dot-L4"></div><div class="finger-shape f-ring"></div></div>
                 <div class="dot-container"><div class="finger-dot" id="dot-L3"></div><div class="finger-shape f-middle"></div></div>
                 <div class="dot-container"><div class="finger-dot" id="dot-L2"></div><div class="finger-shape f-index"></div></div>
-                <div class="dot-container"><div class="finger-shape f-thumb"></div></div> 
             </div>
-            <div class="hand-separator"></div>
-            <div class="nav-group">
-                <div class="dot-container"><div class="finger-shape f-thumb"></div></div> 
+            <div style="width:220px"></div>
+            <div style="display:flex">
                 <div class="dot-container"><div class="finger-dot" id="dot-R2"></div><div class="finger-shape f-index"></div></div>
                 <div class="dot-container"><div class="finger-dot" id="dot-R3"></div><div class="finger-shape f-middle"></div></div>
                 <div class="dot-container"><div class="finger-dot" id="dot-R4"></div><div class="finger-shape f-ring"></div></div>
@@ -137,80 +131,111 @@
         </div>
     </div>
 
-    <input type="text" id="hidden-input" autocomplete="off" inputmode="url">
+    <input type="text" id="hidden-input" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="url">
 
     <script>
-        const dataSet = [
-            ["いしいみつき", "おおむろほおり", "おかだつぐみ", "かいだみら", "ごはいよう", "ささきたかまさ", "さだまさはるか", "しゃへいじゅん", "しゅうかずまさ", "じんしの", "たかしまあらた", "たかはしかいせ", "ちんいりん", "つかもとあさ", "どましぇんこにこる", "なかたにはるか", "はやししゅうご", "ふるはしまな", "ほんじょうまいこ", "みずのえま", "やまもとゆきの", "ようしょうきんほう", "よしだめい", "わかまつえいと", "のろのりこ"],
-            ["ほっかいどう", "あおもり", "いわて", "みやぎ", "あきた", "やまがた", "ふくしま", "いばらき", "とちぎ", "ぐんま", "さいたま", "ちば", "とうきょう", "かながわ", "にいがた", "とやま", "いしかわ", "ふくい", "やまなし", "ながの", "ぎふ", "しずおか", "あいち", "みえ", "しが", "きょうと", "おおさか", "ひょうご", "なら", "わかやま", "とっとり", "しまね", "おかやま", "ひろしま", "やまぐち", "とくしま", "かがわ", "えひめ", "こうち", "ふくおか", "さが", "ながさき", "くまもと", "おおいた", "みやざき", "かごしま", "おきなわ"],
-            ["あ","い","う","え","お","か","き","く","け","こ","さ","し","す","せ","そ","た","ち","つ","て","と","な","に","ぬ","ね","の","は","ひ","ふ","へ","ほ","ま","み","む","め","も","や","ゆ","よ","ら","り","る","れ","ろ","わ","を","ん"],
-            ["いちご", "りんご", "バナナ", "ぶどう", "みかん", "もも", "なし", "かき", "メロン", "スイカ"]
+        const originalData = [
+            { name: "５０音", list: ["あ","い","う","え","お","か","き","く","け","こ","さ","し","す","せ","そ","た","ち","つ","て","と","な","に","ぬ","ね","の","は","ひ","ふ","へ","ほ","ま","み","む","め","も","や","ゆ","よ","ら","り","る","れ","ろ","わ","を","ん"] },
+            { name: "２年１組", list: ["いしいみつき", "おおむろほおり", "おかだつぐみ", "かいだみら", "ごはいよう", "ささきたかまさ", "さだまさはるか", "しゃへいじゅん", "しゅうかずまさ", "じんしの", "たかしまあらた", "たかはしかいせ", "ちんいりん", "つかもとあさ", "どましぇんこにこる", "なかたにはるか", "はやししゅうご", "ふるはしまな", "ほんじょうまいこ", "みずのえま", "やまもとゆきの", "ようしょうきんほう", "よしだめい", "わかまつえいと", "のろのりこ"] },
+            { name: "都道府県", list: ["ほっかいどう", "あおもり", "いわて", "みやぎ", "あきた", "やまがた", "ふくしま", "いばらき", "とちぎ", "ぐんま", "さいたま", "ちば", "とうきょう", "かながわ", "にいがた", "とやま", "いしかわ", "ふくい", "やまなし", "ながの", "ぎふ", "しずおか", "あいち", "みえ", "しが", "きょうと", "おおさか", "ひょうご", "なら", "わかやま", "とっとり", "しまね", "おかやま", "ひろしま", "やまぐち", "とくしま", "かがわ", "えひめ", "こうち", "ふくおか", "さが", "ながさき", "くまもと", "おおいた", "みやざき", "かごしま", "おきなわ"] },
+            { name: "くだもの", list: ["りんご", "みかん", "ぶどう", "いちご", "めろん", "すいか", "ばなな", "もも", "なし", "かき"] },
+            { name: "魚", list: ["まぐろ", "さけ", "たい", "さんま", "いわし", "あじ", "ぶり", "かつお", "さば", "ひらめ", "とびうお", "うなぎ", "めひかり"] },
+            { name: "野菜", list: ["にんじん", "たまねぎ", "じゃがいも", "きゅうり", "なす", "とまと", "ほうれんそう", "だいこん"] },
+            { name: "動物", list: ["いぬ", "ねこ", "うさぎ", "くま", "ぱんだ", "すずめ", "きつね", "はと", "ねずみ", "ぺんぎん"] },
+            { name: "国", list: ["にほん", "あめりか", "ちゅうごく", "かんこく", "ろしあ", "いんど", "おらんだ", "えじぷと", "たい", "めきしこ"] }
         ];
 
-        const kanaMap = {
-            'あ':'a','い':'i','う':'u','え':'e','お':'o','か':'ka','き':'ki','く':'ku','け':'ke','こ':'ko','さ':'sa','し':'si','す':'su','せ':'se','そ':'so','た':'ta','ち':'ti','つ':'tu','て':'te','と':'to','な':'na','ni':'ni','ぬ':'nu','ね':'ne','の':'no','は':'ha','ひ':'hi','ふ':'fu','へ':'he','ほ':'ho','ま':'ma','み':'mi','む':'mu','め':'me','も':'mo','や':'ya','ゆ':'yu','よ':'yo','ら':'ra','り':'ri','る':'ru','れ':'re','ろ':'ro','わ':'wa','を':'wo','ん':'n','が':'ga','ぎ':'gi','ぐ':'gu','げ':'ge','ご':'go','ざ':'za','じ':'zi','ず':'zu','ぜ':'ze','ぞ':'zo','だ':'da','ぢ':'zi','づ':'zu','で':'de','ど':'do','ば':'ba','び':'bi','ぶ':'bu','べ':'be','ぼ':'bo','ぱ':'pa','ぴ':'pi','ぷ':'pu','ぺ':'pe','ぽ':'po','きゃ':'kya','きゅ':'kyu','きょ':'kyo','しゃ':'sya','しゅ':'syu','しょ':'syo','ちゃ':'tya','ちゅ':'tyu','ちょ':'tyo','にゃ':'nya','にゅ':'nyu','にょ':'nyo','ひゃ':'hya','ひゅ':'hyu','ひょ':'hyo','みゃ':'mya','みゅ':'myu','みょ':'myo','りゃ':'rya','りゅ':'ryu','りょ':'ryo','ぎゃ':'gya','ぎゅ':'gyu','ぎょ':'gyo','じゃ':'zya','じゅ':'zyu','じょ':'zyo','びゃ':'bya','びゅ':'byu','びょ':'byo','ぴゃ':'pya','ぴゅ':'pyu','ぴょ':'pyo','しぇ':'sye'
-        };
+        const kanaMap = {'あ':'a','い':'i','う':'u','え':'e','お':'o','か':'ka','き':'ki','く':'ku','け':'ke','こ':'ko','さ':'sa','し':'si','す':'su','せ':'se','そ':'so','た':'ta','ち':'ti','つ':'tu','て':'te','と':'to','な':'na','に':'ni','ぬ':'nu','ね':'ne','の':'no','は':'ha','ひ':'hi','ふ':'fu','へ':'he','ほ':'ho','ま':'ma','み':'mi','む':'mu','め':'me','も':'mo','や':'ya','ゆ':'yu','よ':'yo','ら':'ra','り':'ri','る':'ru','れ':'re','ろ':'ro','わ':'wa','を':'wo','ん':'n','が':'ga','ぎ':'gi','ぐ':'gu','げ':'ge','ご':'go','ざ':'za','じ':'zi','ず':'zu','ぜ':'ze','ぞ':'zo','だ':'da','ぢ':'zi','づ':'zu','で':'de','ど':'do','ば':'ba','び':'bi','ぶ':'bu','べ':'be','ぼ':'bo','ぱ':'pa','ぴ':'pi','ぷ':'pu','ぺ':'pe','ぽ':'po','きゃ':'kya','きゅ':'kyu','きょ':'kyo','しゃ':'sya','しゅ':'syu','しょ':'syo','ちゃ':'tya','ちゅ':'tyu','ちょ':'tyo','にゃ':'nya','にゅ':'nyu','にょ':'nyo','ひゃ':'hya','ひゅ':'hyu','ひょ':'hyo','みゃ':'mya','みゅ':'myu','みょ':'myo','りゃ':'rya','りゅ':'ryu','りょ':'ryo','ぎゃ':'gya','ぎゅ':'gyu','ぎょ':'gyo','じゃ':'zya','じゅ':'zyu','じょ':'zyo','びゃ':'bya','びゅ':'byu','びょ':'byo','ぴゃ':'pya','ぴゅ':'pyu','ぴょ':'pyo','しぇ':'sye'};
 
-        function katakanaToHiragana(src) { return src.replace(/[\u30a1-\u30f6]/g, m => String.fromCharCode(m.charCodeAt(0) - 0x60)); }
-        function toRoma(rawKana) {
-            let kana = katakanaToHiragana(rawKana); let roma = ""; let i = 0;
+        function toRoma(kana) {
+            let roma = ""; let i = 0;
             while (i < kana.length) {
-                let char2 = kana.substring(i, i + 2); let char1 = kana.substring(i, i + 1);
-                if (kanaMap[char2]) { roma += kanaMap[char2]; i += 2; }
-                else if (kanaMap[char1]) { roma += kanaMap[char1]; i += 1; }
-                else if (char1 === 'っ') { i += 1; let next = toRoma(kana.substring(i, i + 1)); if (next) roma += next[0]; }
-                else { roma += char1; i += 1; }
+                let c2 = kana.substring(i, i+2); let c1 = kana.substring(i, i+1);
+                if(kanaMap[c2]){ roma += kanaMap[c2]; i+=2; }
+                else if(c1 === 'っ'){ 
+                    let next = toRoma(kana.substring(i+1, i+2)); 
+                    if(next) { roma += next[0] + next; i+=1; } else { roma += "xtu"; i+=1; }
+                }
+                else { roma += kanaMap[c1] || c1; i+=1; }
             }
             return roma;
         }
 
-        let isAudioEnabled = true, shuffledList = [], currentQ = null, charIndex = 0, solvedCount = 0, totalInCourse = 0, isStarted = false, lastCourseType = 0;
-        const inputElement = document.getElementById("hidden-input"), romaDisplay = document.getElementById("roma-display"), resultScreen = document.getElementById("result-screen");
+        let isAudioEnabled = true, shuffledList = [], currentQ = null, charIndex = 0, solvedCount = 0, totalInCourse = 0, isStarted = false, currentCourseIdx = 0, sortedGlobalData = [];
+        const inputElement = document.getElementById("hidden-input"), romaDisplay = document.getElementById("roma-display");
 
-        function selectCourse(type) {
-            lastCourseType = type; solvedCount = 0; resultScreen.style.display = "none";
-            document.querySelectorAll('.course-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(`btn-course-${type}`).classList.add('active');
-            shuffledList = dataSet[type].map(k => ({ k: k, r: toRoma(k) })).sort(() => Math.random() - 0.5);
-            totalInCourse = shuffledList.length; 
-            document.getElementById("total-count").innerText = totalInCourse;
-            updateProgress(); isStarted = true; nextQuestion();
+        // 初期表示を確実にするための初期化関数
+        function initCourses() {
+            const container = document.getElementById("course-select");
+            container.innerHTML = ""; // 重複防止
+            
+            // データを並び替えてグローバルに保持
+            sortedGlobalData = [...originalData].sort((a, b) => a.list.length - b.list.length);
+            
+            sortedGlobalData.forEach((course, index) => {
+                const btn = document.createElement("button");
+                btn.id = `btn-course-${index}`;
+                btn.innerText = `${course.name} (${course.list.length})`;
+                
+                let colorClass = "btn-blue";
+                if (course.list.length < 15) colorClass = "btn-green";
+                else if (course.list.length >= 30) colorClass = "btn-red";
+                
+                btn.className = `course-btn ${colorClass}`;
+                btn.onclick = () => selectCourse(index);
+                container.appendChild(btn);
+            });
         }
 
-        function createConfetti() {
-            for (let i = 0; i < 50; i++) {
-                const c = document.createElement('div');
-                c.className = 'confetti';
-                c.style.left = Math.random() * 100 + 'vw';
-                c.style.backgroundColor = `hsl(${Math.random() * 360}, 80%, 60%)`;
-                c.style.animationDelay = Math.random() * 2 + 's';
-                document.body.appendChild(c);
-                setTimeout(() => c.remove(), 3000);
+        function selectCourse(idx) {
+            currentCourseIdx = idx; solvedCount = 0;
+            const course = sortedGlobalData[idx];
+            document.getElementById("result-screen").style.display = "none";
+            document.querySelectorAll('.course-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-course-${idx}`).classList.add('active');
+            
+            shuffledList = course.list.map(k => ({k:k, r:toRoma(k)})).sort(() => Math.random() - 0.5);
+            totalInCourse = shuffledList.length;
+            document.getElementById("total-count").innerText = totalInCourse;
+            document.getElementById("current-count").innerText = "0";
+            isStarted = true; nextQuestion();
+        }
+
+        function startConfetti() {
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 80%, 50%)`;
+                confetti.style.animationDelay = Math.random() * 2 + 's';
+                confetti.style.width = Math.random() * 10 + 5 + 'px';
+                confetti.style.height = confetti.style.width;
+                document.body.appendChild(confetti);
+                setTimeout(() => confetti.remove(), 4000);
             }
         }
 
         function nextQuestion() {
             if (shuffledList.length === 0) {
-                document.getElementById("result-text").innerText = `ぜんぶで ${totalInCourse} 問 クリアしたよ！`;
-                document.getElementById("result-rank").innerText = totalInCourse >= 40 ? "タイピング名人！" : "すごい！！";
-                resultScreen.style.display = "flex"; isStarted = false;
-                createConfetti(); return;
+                const rankEl = document.getElementById("result-rank");
+                const textEl = document.getElementById("result-text");
+                if (totalInCourse >= 40) rankEl.innerText = "?? タイピング・レジェンド ??";
+                else if (totalInCourse >= 20) rankEl.innerText = "?? タイピングの達人 ??";
+                else rankEl.innerText = "? タイピングの天才 ?";
+                textEl.innerText = `${totalInCourse}問 ぜんぶクリア！キミならできると信じてたよ！`;
+                document.getElementById("result-screen").style.display = "flex";
+                isStarted = false; startConfetti(); return;
             }
             currentQ = shuffledList.pop(); charIndex = 0; updateDisplay();
-            if (isAudioEnabled) { speechSynthesis.cancel(); let uttr = new SpeechSynthesisUtterance(currentQ.k); uttr.lang = 'ja-JP'; speechSynthesis.speak(uttr); }
+            if (isAudioEnabled) { speechSynthesis.cancel(); let u = new SpeechSynthesisUtterance(currentQ.k); u.lang='ja-JP'; speechSynthesis.speak(u); }
             focusInput();
-        }
-
-        function updateProgress() { 
-            // 「のこり」を表示（総数から終わった数を引く）
-            document.getElementById("current-count").innerText = totalInCourse - solvedCount; 
         }
 
         function updateDisplay() {
             document.getElementById("sub-display").innerText = currentQ.k;
             let html = "";
             for (let i = 0; i < currentQ.r.length; i++) {
-                if (i < charIndex) html += `<span style="color:#dcdde1">${currentQ.r[i]}</span>`;
+                if (i < charIndex) html += `<span style="color:#ddd">${currentQ.r[i]}</span>`;
                 else if (i === charIndex) html += `<span style="color:#e67e22; border-bottom:3px solid #e67e22">${currentQ.r[i]}</span>`;
                 else html += `<span>${currentQ.r[i]}</span>`;
             }
@@ -225,43 +250,32 @@
             const targetBtn = document.querySelector(`.key-btn[data-key="${targetChar}"]`);
             if (targetBtn) {
                 targetBtn.classList.add('highlight-key');
-                const fingerMap = {'q':'L5','a':'L5','z':'L5','w':'L4','s':'L4','x':'L4','e':'L3','d':'L3','c':'L3','r':'L2','f':'L2','v':'L2','t':'L2','g':'L2','b':'L2','y':'R2','h':'R2','n':'R2','u':'R2','j':'R2','m':'R2','i':'R3','k':'R3','o':'R4','l':'R4','p':'R5'};
-                const finger = fingerMap[targetChar]; if(finger) document.getElementById(`dot-${finger}`).classList.add('active');
+                const fMap = {'q':'L5','a':'L5','z':'L5','w':'L4','s':'L4','x':'L4','e':'L3','d':'L3','c':'L3','r':'L2','f':'L2','v':'L2','t':'L2','g':'L2','b':'L2','y':'R2','h':'R2','n':'R2','u':'R2','j':'R2','m':'R2','i':'R3','k':'R3','o':'R4','l':'R4','p':'R5'};
+                const f = fMap[targetChar]; if(f) document.getElementById(`dot-${f}`).classList.add('active');
             }
-        }
-
-        function backToMenu() {
-            isStarted = false; currentQ = null; resultScreen.style.display = "none";
-            document.querySelectorAll('.course-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById("sub-display").innerText = "コースを選んでスタート";
-            romaDisplay.innerHTML = ""; document.getElementById("current-count").innerText = "0";
-            document.getElementById("total-count").innerText = "0";
-            document.querySelectorAll('.key-btn').forEach(b => b.classList.remove('highlight-key'));
-            document.querySelectorAll('.finger-dot').forEach(d => d.classList.remove('active'));
-        }
-
-        function triggerOkEffect() {
-            const el = document.createElement('div');
-            el.className = 'ok-effect'; el.innerText = 'OK!';
-            document.getElementById("question-box").appendChild(el);
-            setTimeout(() => el.remove(), 500);
         }
 
         inputElement.addEventListener("input", (e) => {
             if (!isStarted || !e.target.value) return;
-            const typed = e.target.value.toLowerCase(); const target = currentQ.r[charIndex];
-            if (typed.endsWith(target)) {
+            if (e.target.value.toLowerCase().endsWith(currentQ.r[charIndex])) {
                 charIndex++; updateDisplay();
-                if (charIndex === currentQ.r.length) { 
-                    solvedCount++; updateProgress(); triggerOkEffect(); setTimeout(nextQuestion, 300); 
+                if (charIndex === currentQ.r.length) {
+                    solvedCount++; document.getElementById("current-count").innerText = solvedCount;
+                    const ok = document.createElement('div'); ok.className='ok-effect'; ok.innerText='OK!';
+                    document.getElementById("question-box").appendChild(ok);
+                    setTimeout(() => { ok.remove(); nextQuestion(); }, 300);
                 }
             }
             e.target.value = "";
         });
 
-        function resetGame() { selectCourse(lastCourseType); }
-        function focusInput() { if (isStarted) inputElement.focus(); }
+        function resetGame() { selectCourse(currentCourseIdx); }
+        function backToMenu() { location.reload(); }
+        function focusInput() { if(isStarted) inputElement.focus(); }
         function toggleAudio() { isAudioEnabled = !isAudioEnabled; document.getElementById("audio-text").innerText = isAudioEnabled ? "ON" : "OFF"; }
+
+        // スクリプトの最後で初期化を確実に実行
+        window.onload = initCourses;
     </script>
 </body>
 </html>
