@@ -11,26 +11,24 @@
         #course-area { display: flex; align-items: center; gap: 8px; }
         .course-btn { color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; font-weight: bold; opacity: 0.8; }
         .btn-green { background: #27ae60; } .btn-blue { background: #3498db; } .btn-red { background: #e74c3c; }
+        .course-btn:hover { opacity: 1; transform: translateY(-1px); }
         .course-btn.active { outline: 3px solid #f39c12; outline-offset: 2px; opacity: 1; transform: scale(1.05); }
-        #score-board { font-weight: bold; color: #2c3e50; font-size: 1.1rem; min-width: 140px; }
+
+        /* 【修正：進捗表示の日本語化】 */
+        #score-board { font-weight: bold; color: #2c3e50; font-size: 1.0rem; min-width: 160px; text-align: right; }
+        
         #audio-toggle { background: #ffffff; border: 2px solid #e67e22; border-radius: 50px; padding: 3px 12px; cursor: pointer; font-size: 0.8rem; color: #e67e22; font-weight: bold; }
         #question-box { background: #fafafa; border: 2px solid #eaeeef; border-radius: 15px; padding: 5px 10px; margin: 0 0 2px 0; min-height: 85px; display: flex; flex-direction: column; justify-content: center; position: relative; overflow: visible; }
         #sub-display { font-size: 2.2rem; font-weight: bold; margin-bottom: 2px; color: #2c3e50; }
         #roma-display { font-size: 1.7rem; letter-spacing: 0.15em; color: #bdc3c7; min-height: 1.1em; text-transform: lowercase; }
 
-        /* 【修正：リザルト画面のコンパクト化と文字化け解消】 */
         #result-screen {
             display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(255, 255, 255, 0.98); border-radius: 20px; z-index: 200;
             flex-direction: column; justify-content: center; align-items: center;
             animation: fadeIn 0.4s ease-out; padding: 10px; box-sizing: border-box;
         }
-        #result-screen h2 { 
-            font-size: 2.0rem; /* サイズ縮小 */
-            margin: 0; color: #e67e22; 
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-            animation: bounce 0.8s infinite alternate;
-        }
+        #result-screen h2 { font-size: 2.0rem; margin: 0; color: #e67e22; animation: bounce 0.8s infinite alternate; }
         @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-5px); } }
         #result-rank { font-size: 1.4rem; font-weight: bold; color: #f1c40f; margin: 2px 0; }
         #result-text { font-size: 1.1rem; margin: 5px 0; }
@@ -64,7 +62,7 @@
         .hand-separator { width: 120px; } 
         .dot-container { width: 61px; display: flex; flex-direction: column; align-items: center; position: relative; height: 80px; }
         .finger-shape { position: absolute; bottom: 0; width: 42px; background: rgba(0, 0, 0, 0.08); border-radius: 20px 20px 5px 5px; z-index: 1; }
-        .f-pinky { height: 45px; } .f-ring { height: 60px; } .f-middle { height: 70px; } .f-index { height: 63px; } .f-thumb { height: 35px; } 
+        .f-pinky { height: 45px; } .f-ring { height: 60px; } .f-middle { height: 75px; } .f-index { height: 63px; } .f-thumb { height: 35px; } 
         .finger-dot { width: 18px; height: 18px; border-radius: 50%; border: 2px solid rgba(0,0,0,0.1); margin-top: 5px; z-index: 2; position: relative; opacity: 0.7; }
         #dot-L5, #dot-R5 { top: 32px; background-color: #ff79c6; } #dot-L4, #dot-R4 { top: 12px; background-color: #8be9fd; } #dot-L3, #dot-R3 { top: 5px; background-color: #50fa7b; } #dot-L2, #dot-R2 { top: 10px; background-color: #ffb86c; } 
         .finger-dot.active { transform: scale(2.2); opacity: 1; box-shadow: 0 0 10px rgba(0,0,0,0.3); }
@@ -93,7 +91,7 @@
                     <button id="btn-course-1" class="course-btn btn-red" onclick="selectCourse(1)">都道府県 (47問)</button>
                 </div>
             </div>
-            <div id="score-board">PROGRESS: <span id="current-count">0</span> / <span id="total-count">0</span></div>
+            <div id="score-board">のこり：<span id="current-count">0</span> / ぜんぶで：<span id="total-count">0</span></div>
             <button id="audio-toggle" onclick="toggleAudio()">音: <span id="audio-text">ON</span></button>
         </div>
         <div id="question-box">
@@ -150,7 +148,7 @@
         ];
 
         const kanaMap = {
-            'あ':'a','い':'i','う':'u','え':'e','お':'o','か':'ka','き':'ki','く':'ku','け':'ke','こ':'ko','さ':'sa','し':'si','す':'su','せ':'se','そ':'so','た':'ta','ち':'ti','つ':'tu','て':'te','と':'to','な':'na','ni':'ni','ぬ':'nu','ね':'ne','の':'no','は':'ha','ひ':'hi','ふ':'fu','へ':'he','ほ':'ho','ま':'ma','み':'mi','む':'mu','め':'me','も':'mo','や':'ya','ゆ':'yu','よ':'yo','ら':'ra','り':'ri','る':'ru','れ':'re','ろ':'ro','わ':'wa','を':'wo','ん':'n','が':'ga','ぎ':'gi','ぐ':'gu','げ':'ge','ご':'go','ざ':'za','じ':'zi','ず':'zu','ぜ':'ze','ぞ':'zo','だ':'da','ぢ':'zi','づ':'zu','で':'de','ど':'do','ば':'ba','び':'bi','ぶ':'bu','べ':'be','ぼ':'bo','ぱ':'pa','ぴ':'pi','ぷ':'pu','ぺ':'pe','ぽ':'po','きゃ':'kya','きゅ':'kyu','きょ':'kyo','しゃ':'sya','しゅ':'syu','しょ':'syo','ちゃ':'tya','ちゅ':'chu','ちょ':'cho','にゃ':'nya','にゅ':'nyu','にょ':'nyo','ひゃ':'hya','ひゅ':'hyu','ひょ':'hyo','みゃ':'mya','みゅ':'myu','みょ':'myo','りゃ':'rya','りゅ':'ryu','りょ':'ryo','ぎゃ':'gya','ぎゅ':'gyu','ぎょ':'gyo','じゃ':'zya','じゅ':'zyu','じょ':'zyo','びゃ':'bya','びゅ':'byu','びょ':'byo','ぴゃ':'pya','ぴゅ':'pyu','ぴょ':'pyo','しぇ':'sye'
+            'あ':'a','い':'i','う':'u','え':'e','お':'o','か':'ka','き':'ki','く':'ku','け':'ke','こ':'ko','さ':'sa','し':'si','す':'su','せ':'se','そ':'so','た':'ta','ち':'ti','つ':'tu','て':'te','と':'to','な':'na','ni':'ni','ぬ':'nu','ね':'ne','の':'no','は':'ha','ひ':'hi','ふ':'fu','へ':'he','ほ':'ho','ま':'ma','み':'mi','む':'mu','め':'me','も':'mo','や':'ya','ゆ':'yu','よ':'yo','ら':'ra','り':'ri','る':'ru','れ':'re','ろ':'ro','わ':'wa','を':'wo','ん':'n','が':'ga','ぎ':'gi','ぐ':'gu','げ':'ge','ご':'go','ざ':'za','じ':'zi','ず':'zu','ぜ':'ze','ぞ':'zo','だ':'da','ぢ':'zi','づ':'zu','で':'de','ど':'do','ば':'ba','び':'bi','ぶ':'bu','べ':'be','ぼ':'bo','ぱ':'pa','ぴ':'pi','ぷ':'pu','ぺ':'pe','ぽ':'po','きゃ':'kya','きゅ':'kyu','きょ':'kyo','しゃ':'sya','しゅ':'syu','しょ':'syo','ちゃ':'tya','ちゅ':'tyu','ちょ':'tyo','にゃ':'nya','にゅ':'nyu','にょ':'nyo','ひゃ':'hya','ひゅ':'hyu','ひょ':'hyo','みゃ':'mya','みゅ':'myu','みょ':'myo','りゃ':'rya','りゅ':'ryu','りょ':'ryo','ぎゃ':'gya','ぎゅ':'gyu','ぎょ':'gyo','じゃ':'zya','じゅ':'zyu','じょ':'zyo','びゃ':'bya','びゅ':'byu','びょ':'byo','ぴゃ':'pya','ぴゅ':'pyu','ぴょ':'pyo','しぇ':'sye'
         };
 
         function katakanaToHiragana(src) { return src.replace(/[\u30a1-\u30f6]/g, m => String.fromCharCode(m.charCodeAt(0) - 0x60)); }
@@ -174,12 +172,13 @@
             document.querySelectorAll('.course-btn').forEach(btn => btn.classList.remove('active'));
             document.getElementById(`btn-course-${type}`).classList.add('active');
             shuffledList = dataSet[type].map(k => ({ k: k, r: toRoma(k) })).sort(() => Math.random() - 0.5);
-            totalInCourse = shuffledList.length; document.getElementById("total-count").innerText = totalInCourse;
+            totalInCourse = shuffledList.length; 
+            document.getElementById("total-count").innerText = totalInCourse;
             updateProgress(); isStarted = true; nextQuestion();
         }
 
         function createConfetti() {
-            for (let i = 0; i < 60; i++) {
+            for (let i = 0; i < 50; i++) {
                 const c = document.createElement('div');
                 c.className = 'confetti';
                 c.style.left = Math.random() * 100 + 'vw';
@@ -192,8 +191,8 @@
 
         function nextQuestion() {
             if (shuffledList.length === 0) {
-                document.getElementById("result-text").innerText = `全 ${totalInCourse} 問 完走！`;
-                document.getElementById("result-rank").innerText = totalInCourse >= 40 ? "タイピング・マスター！" : "すごい！！";
+                document.getElementById("result-text").innerText = `ぜんぶで ${totalInCourse} 問 クリアしたよ！`;
+                document.getElementById("result-rank").innerText = totalInCourse >= 40 ? "タイピング名人！" : "すごい！！";
                 resultScreen.style.display = "flex"; isStarted = false;
                 createConfetti(); return;
             }
@@ -202,7 +201,11 @@
             focusInput();
         }
 
-        function updateProgress() { document.getElementById("current-count").innerText = solvedCount; }
+        function updateProgress() { 
+            // 「のこり」を表示（総数から終わった数を引く）
+            document.getElementById("current-count").innerText = totalInCourse - solvedCount; 
+        }
+
         function updateDisplay() {
             document.getElementById("sub-display").innerText = currentQ.k;
             let html = "";
