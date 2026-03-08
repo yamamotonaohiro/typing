@@ -5,56 +5,60 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-select=none">
     <title>タッチタイピングの練習</title>
     <style>
-        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; background: #fdfdfd; color: #333; margin: 0; min-height: 100vh; padding: 2px; box-sizing: border-box; }
-        #container { text-align: center; background: white; padding: 10px 20px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 750px; position: relative; margin-bottom: 2px; z-index: 10; }
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; background: #fdfdfd; color: #333; margin: 0; min-height: 100vh; padding: 2px; box-sizing: border-box; overflow-x: hidden; }
+        #container { text-align: center; background: white; padding: 10px 20px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 850px; position: relative; margin-bottom: 2px; z-index: 10; }
         #top-settings { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 8px; margin-bottom: 8px; flex-wrap: wrap; gap: 10px; }
         #course-area { display: flex; align-items: center; gap: 8px; }
-        .course-btn { background: #3498db; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; font-weight: bold; opacity: 0.8; }
-        .course-btn.active { background: #e67e22 !important; opacity: 1; }
-        #score-board { font-weight: bold; color: #2c3e50; font-size: 1.1rem; min-width: 150px; }
+        .course-btn { color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; font-weight: bold; opacity: 0.8; }
+        .btn-green { background: #27ae60; } .btn-blue { background: #3498db; } .btn-red { background: #e74c3c; }
+        .course-btn.active { outline: 3px solid #f39c12; outline-offset: 2px; opacity: 1; transform: scale(1.05); }
+        #score-board { font-weight: bold; color: #2c3e50; font-size: 1.1rem; min-width: 140px; }
         #audio-toggle { background: #ffffff; border: 2px solid #e67e22; border-radius: 50px; padding: 3px 12px; cursor: pointer; font-size: 0.8rem; color: #e67e22; font-weight: bold; }
-        #question-box { background: #fafafa; border: 2px solid #eaeeef; border-radius: 15px; padding: 5px 10px; margin: 0 0 2px 0; min-height: 85px; display: flex; flex-direction: column; justify-content: center; position: relative; }
+        #question-box { background: #fafafa; border: 2px solid #eaeeef; border-radius: 15px; padding: 5px 10px; margin: 0 0 2px 0; min-height: 85px; display: flex; flex-direction: column; justify-content: center; position: relative; overflow: visible; }
         #sub-display { font-size: 2.2rem; font-weight: bold; margin-bottom: 2px; color: #2c3e50; }
         #roma-display { font-size: 1.7rem; letter-spacing: 0.15em; color: #bdc3c7; min-height: 1.1em; text-transform: lowercase; }
-        #result-screen { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.98); border-radius: 20px; z-index: 200; flex-direction: column; justify-content: center; align-items: center; }
-        #result-screen h2 { font-size: 2.2rem; color: #27ae60; margin: 0 0 10px 0; }
-        .result-btns { display: flex; gap: 15px; }
+
+        /* 【修正：リザルト画面のコンパクト化と文字化け解消】 */
+        #result-screen {
+            display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.98); border-radius: 20px; z-index: 200;
+            flex-direction: column; justify-content: center; align-items: center;
+            animation: fadeIn 0.4s ease-out; padding: 10px; box-sizing: border-box;
+        }
+        #result-screen h2 { 
+            font-size: 2.0rem; /* サイズ縮小 */
+            margin: 0; color: #e67e22; 
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            animation: bounce 0.8s infinite alternate;
+        }
+        @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-5px); } }
+        #result-rank { font-size: 1.4rem; font-weight: bold; color: #f1c40f; margin: 2px 0; }
+        #result-text { font-size: 1.1rem; margin: 5px 0; }
+        .result-btns { display: flex; gap: 10px; margin-top: 10px; }
         .btn-gray { background: #95a5a6 !important; }
+
+        .confetti { position: fixed; width: 8px; height: 8px; z-index: 1000; pointer-events: none; animation: confetti-fall 3s linear forwards; }
+        @keyframes confetti-fall { 0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+
         .ok-effect { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 5rem; font-weight: 900; color: #27ae60; text-shadow: 0 0 20px #fff; animation: giantPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; pointer-events: none; z-index: 100; }
         @keyframes giantPop { 0% { opacity: 0; transform: translate(-50%, -30%) scale(0.3); } 50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); } 100% { opacity: 0; transform: translate(-50%, -70%) scale(1.2); } }
-        
-        /* キーボード */
-        #keyboard-area { width: 920px; background: #d1d4d9; padding: 10px 0; border-radius: 12px; display: flex; flex-direction: column; align-items: center; position: relative; }
+
+        #keyboard-area { width: 920px; background: #d1d4d9; padding: 10px 0; border-radius: 12px; display: flex; flex-direction: column; align-items: center; position: relative; margin-top: 12px; }
         .keyboard-row { display: flex; justify-content: center; width: 100%; margin-bottom: 4px; }
         .key-btn { border: 2px solid rgba(0,0,0,0.05); border-radius: 6px; width: 55px; height: 55px; margin: 0 3px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: bold; color: #444; position: relative; flex-shrink: 0; box-sizing: border-box; transition: all 0.1s ease; }
-        
-        /* 【修正：ホームポジション F と J のデザイン強化】 */
-        .home-pos { 
-            border: 3px solid #555 !important; 
-            box-shadow: inset 0 -4px 0 #888;
-        }
-        /* FとJのキーにある突起を擬似要素で作成 */
-        .home-pos::after {
-            content: "";
-            position: absolute;
-            bottom: 8px;
-            width: 20px;
-            height: 4px;
-            background: #555;
-            border-radius: 2px;
-        }
-
+        .home-pos { border: 3px solid #555 !important; box-shadow: inset 0 -4px 0 #888; }
+        .home-pos::after { content: ""; position: absolute; bottom: 8px; width: 20px; height: 4px; background: #555; border-radius: 2px; }
         .hand-gap { width: 80px; } 
+
         .pinky { background-color: #ffcceb; border-bottom: 3px solid #ff79c6; }
         .ring { background-color: #d1f7ff; border-bottom: 3px solid #8be9fd; }
         .middle { background-color: #d4fee0; border-bottom: 3px solid #50fa7b; }
         .index { background-color: #ffebd1; border-bottom: 3px solid #ffb86c; }
-
         .pinky.highlight-key { background-color: #ff33b5 !important; color: white !important; box-shadow: 0 0 20px #ff33b5; transform: scale(1.1); z-index: 5; }
         .ring.highlight-key { background-color: #00d4ff !important; color: white !important; box-shadow: 0 0 20px #00d4ff; transform: scale(1.1); z-index: 5; }
         .middle.highlight-key { background-color: #00ff44 !important; color: white !important; box-shadow: 0 0 20px #00ff44; transform: scale(1.1); z-index: 5; }
         .index.highlight-key { background-color: #ff9900 !important; color: white !important; box-shadow: 0 0 20px #ff9900; transform: scale(1.1); z-index: 5; }
-        
+
         #finger-navigator { display: flex; justify-content: center; margin-top: 10px; padding: 0; background: rgba(255,255,255,0.2); border-radius: 15px; align-items: flex-end; width: fit-content; transform: translateX(12px); }
         .nav-group { display: flex; }
         .hand-separator { width: 120px; } 
@@ -62,10 +66,7 @@
         .finger-shape { position: absolute; bottom: 0; width: 42px; background: rgba(0, 0, 0, 0.08); border-radius: 20px 20px 5px 5px; z-index: 1; }
         .f-pinky { height: 45px; } .f-ring { height: 60px; } .f-middle { height: 70px; } .f-index { height: 63px; } .f-thumb { height: 35px; } 
         .finger-dot { width: 18px; height: 18px; border-radius: 50%; border: 2px solid rgba(0,0,0,0.1); margin-top: 5px; z-index: 2; position: relative; opacity: 0.7; }
-        #dot-L5, #dot-R5 { top: 32px; background-color: #ff79c6; } 
-        #dot-L4, #dot-R4 { top: 12px; background-color: #8be9fd; } 
-        #dot-L3, #dot-R3 { top: 5px; background-color: #50fa7b; } 
-        #dot-L2, #dot-R2 { top: 10px; background-color: #ffb86c; } 
+        #dot-L5, #dot-R5 { top: 32px; background-color: #ff79c6; } #dot-L4, #dot-R4 { top: 12px; background-color: #8be9fd; } #dot-L3, #dot-R3 { top: 5px; background-color: #50fa7b; } #dot-L2, #dot-R2 { top: 10px; background-color: #ffb86c; } 
         .finger-dot.active { transform: scale(2.2); opacity: 1; box-shadow: 0 0 10px rgba(0,0,0,0.3); }
         #hidden-input { position: absolute; opacity: 0; left: -9999px; }
     </style>
@@ -74,19 +75,22 @@
     <div id="container">
         <div id="result-screen">
             <h2>お疲れ様でした！</h2>
+            <div id="result-rank">すばらしい！！</div>
             <p id="result-text"></p>
             <div class="result-btns">
-                <button class="course-btn active" onclick="resetGame()">もう一度練習する</button>
+                <button class="course-btn btn-blue" onclick="resetGame()">もう一度練習する</button>
                 <button class="course-btn btn-gray" onclick="backToMenu()">メニューに戻る</button>
             </div>
         </div>
+
         <div id="top-settings">
             <div id="course-area">
-                <span style="font-size:0.85rem;font-weight:bold;color:#7f8c8d;">コース：</span>
+                <span style="font-size:0.8rem;font-weight:bold;color:#7f8c8d;">コース：</span>
                 <div id="course-select">
-                    <button id="btn-course-0" class="course-btn" onclick="selectCourse(0)">２年１組</button>
-                    <button id="btn-course-1" class="course-btn" onclick="selectCourse(1)">都道府県</button>
-                    <button id="btn-course-2" class="course-btn" onclick="selectCourse(2)">５０音</button>
+                    <button id="btn-course-3" class="course-btn btn-green" onclick="selectCourse(3)">くだもの (10問)</button>
+                    <button id="btn-course-0" class="course-btn btn-blue" onclick="selectCourse(0)">２年１組 (25問)</button>
+                    <button id="btn-course-2" class="course-btn btn-blue" onclick="selectCourse(2)">５０音 (46問)</button>
+                    <button id="btn-course-1" class="course-btn btn-red" onclick="selectCourse(1)">都道府県 (47問)</button>
                 </div>
             </div>
             <div id="score-board">PROGRESS: <span id="current-count">0</span> / <span id="total-count">0</span></div>
@@ -97,6 +101,7 @@
             <div id="roma-display"></div>
         </div>
     </div>
+
     <div id="keyboard-area">
         <div id="virtual-keyboard">
             <div class="keyboard-row" style="transform: translateX(-15px);">
@@ -133,55 +138,64 @@
             </div>
         </div>
     </div>
+
     <input type="text" id="hidden-input" autocomplete="off" inputmode="url">
+
     <script>
-        const rawData = [
-            ["いしいみつき", "ほっかいどう"], ["おおむろほおり", "あおもり"], ["おかだつぐみ", "いわて"], ["かいだみら", "みやぎ"],
-            ["ごはいよう", "あきた"], ["ささきたかまさ", "やまがた"], ["さだまさはるか", "ふくしま"], ["しゃへいじゅん", "いばらき"],
-            ["しゅうかずまさ", "とちぎ"], ["じんしの", "ぐんま"], ["たかしまあらた", "さいたま"], ["たかはしかいせ", "ちば"],
-            ["ちんいりん", "とうきょう"], ["つかもとあさ", "かながわ"], ["どましぇんこにこる", "にいがた"], ["なかたにはるか", "とやま"],
-            ["はやししゅうご", "いしかわ"], ["ふるはしまな", "ふくい"], ["ほんじょうまいこ", "やまなし"], ["みずのえま", "ながの"],
-            ["やまもとゆきの", "ぎふ"], ["ようしょうきんほう", "しずおか"], ["よしだめい", "あいち"], ["わかまつえいと", "みえ"],
-            ["のろのりこ", "しが"], ["", "きょうと"], ["", "おおさか"], ["", "ひょうご"], ["", "なら"],
-            ["", "わかやま"], ["", "とっとり"], ["", "しまね"], ["", "おかやま"], ["", "ひろしま"],
-            ["", "やまぐち"], ["", "とくしま"], ["", "かがわ"], ["", "えひめ"], ["", "こうち"],
-            ["", "ふくおか"], ["", "さが"], ["", "ながさき"], ["", "くまもと"], ["", "おおいた"],
-            ["", "みやざき"], ["", "かごしま"], ["", "おきなわ"]
+        const dataSet = [
+            ["いしいみつき", "おおむろほおり", "おかだつぐみ", "かいだみら", "ごはいよう", "ささきたかまさ", "さだまさはるか", "しゃへいじゅん", "しゅうかずまさ", "じんしの", "たかしまあらた", "たかはしかいせ", "ちんいりん", "つかもとあさ", "どましぇんこにこる", "なかたにはるか", "はやししゅうご", "ふるはしまな", "ほんじょうまいこ", "みずのえま", "やまもとゆきの", "ようしょうきんほう", "よしだめい", "わかまつえいと", "のろのりこ"],
+            ["ほっかいどう", "あおもり", "いわて", "みやぎ", "あきた", "やまがた", "ふくしま", "いばらき", "とちぎ", "ぐんま", "さいたま", "ちば", "とうきょう", "かながわ", "にいがた", "とやま", "いしかわ", "ふくい", "やまなし", "ながの", "ぎふ", "しずおか", "あいち", "みえ", "しが", "きょうと", "おおさか", "ひょうご", "なら", "わかやま", "とっとり", "しまね", "おかやま", "ひろしま", "やまぐち", "とくしま", "かがわ", "えひめ", "こうち", "ふくおか", "さが", "ながさき", "くまもと", "おおいた", "みやざき", "かごしま", "おきなわ"],
+            ["あ","い","う","え","お","か","き","く","け","こ","さ","し","す","せ","そ","た","ち","つ","て","と","な","に","ぬ","ね","の","は","ひ","ふ","へ","ほ","ま","み","む","め","も","や","ゆ","よ","ら","り","る","れ","ろ","わ","を","ん"],
+            ["いちご", "りんご", "バナナ", "ぶどう", "みかん", "もも", "なし", "かき", "メロン", "スイカ"]
         ];
-        const aiuData = ["あ","い","う","え","お","か","き","く","け","こ","さ","し","す","せ","そ","た","ち","つ","て","と","な","に","ぬ","ね","の","は","ひ","ふ","へ","ほ","ま","み","む","め","も","や","ゆ","よ","ら","り","る","れ","ろ","わ","を","ん"];
+
         const kanaMap = {
-            'あ':'a','い':'i','う':'u','え':'e','お':'o','か':'ka','き':'ki','く':'ku','け':'ke','こ':'ko','さ':'sa','し':'si','す':'su','せ':'se','そ':'so','た':'ta','ち':'ti','つ':'tu','て':'te','と':'to','な':'na','に':'ni','ぬ':'nu','ね':'ne','の':'no','は':'ha','ひ':'hi','ふ':'fu','へ':'he','ほ':'ho','ま':'ma','み':'mi','む':'mu','め':'me','も':'mo','や':'ya','ゆ':'yu','よ':'yo','ら':'ra','り':'ri','る':'ru','れ':'re','ろ':'ro','わ':'wa','を':'wo','が':'ga','ぎ':'gi','ぐ':'gu','げ':'ge','ご':'go','ざ':'za','じ':'zi','ず':'zu','ぜ':'ze','ぞ':'zo','だ':'da','ぢ':'zi','づ':'zu','で':'de','ど':'do','ば':'ba','び':'bi','ぶ':'bu','べ':'be','ぼ':'bo','ぱ':'pa','ぴ':'pi','ぷ':'pu','ぺ':'pe','ぽ':'po','きゃ':'kya','きゅ':'kyu','きょ':'kyo','しゃ':'sya','しゅ':'syu','しょ':'syo','ちゃ':'tya','ちゅ':'tyu','ちょ':'tyo','にゃ':'nya','にゅ':'nyu','にょ':'nyo','ひゃ':'hya','ひゅ':'hyu','ひょ':'hyo','みゃ':'mya','みゅ':'myu','みょ':'myo','りゃ':'rya','りゅ':'ryu','りょ':'ryo','ぎゃ':'gya','ぎゅ':'gyu','ぎょ':'gyo','じゃ':'zya','じゅ':'zyu','じょ':'zyo','びゃ':'bya','びゅ':'byu','びょ':'byo','ぴゃ':'pya','ぴゅ':'pyu','ぴょ':'pyo','しぇ':'sye','ん':'n'
+            'あ':'a','い':'i','う':'u','え':'e','お':'o','か':'ka','き':'ki','く':'ku','け':'ke','こ':'ko','さ':'sa','し':'si','す':'su','せ':'se','そ':'so','た':'ta','ち':'ti','つ':'tu','て':'te','と':'to','な':'na','ni':'ni','ぬ':'nu','ね':'ne','の':'no','は':'ha','ひ':'hi','ふ':'fu','へ':'he','ほ':'ho','ま':'ma','み':'mi','む':'mu','め':'me','も':'mo','や':'ya','ゆ':'yu','よ':'yo','ら':'ra','り':'ri','る':'ru','れ':'re','ろ':'ro','わ':'wa','を':'wo','ん':'n','が':'ga','ぎ':'gi','ぐ':'gu','げ':'ge','ご':'go','ざ':'za','じ':'zi','ず':'zu','ぜ':'ze','ぞ':'zo','だ':'da','ぢ':'zi','づ':'zu','で':'de','ど':'do','ば':'ba','び':'bi','ぶ':'bu','べ':'be','ぼ':'bo','ぱ':'pa','ぴ':'pi','ぷ':'pu','ぺ':'pe','ぽ':'po','きゃ':'kya','きゅ':'kyu','きょ':'kyo','しゃ':'sya','しゅ':'syu','しょ':'syo','ちゃ':'tya','ちゅ':'chu','ちょ':'cho','にゃ':'nya','にゅ':'nyu','にょ':'nyo','ひゃ':'hya','ひゅ':'hyu','ひょ':'hyo','みゃ':'mya','みゅ':'myu','みょ':'myo','りゃ':'rya','りゅ':'ryu','りょ':'ryo','ぎゃ':'gya','ぎゅ':'gyu','ぎょ':'gyo','じゃ':'zya','じゅ':'zyu','じょ':'zyo','びゃ':'bya','びゅ':'byu','びょ':'byo','ぴゃ':'pya','ぴゅ':'pyu','ぴょ':'pyo','しぇ':'sye'
         };
 
-        function toRoma(kana) {
-            let roma = ""; let i = 0;
+        function katakanaToHiragana(src) { return src.replace(/[\u30a1-\u30f6]/g, m => String.fromCharCode(m.charCodeAt(0) - 0x60)); }
+        function toRoma(rawKana) {
+            let kana = katakanaToHiragana(rawKana); let roma = ""; let i = 0;
             while (i < kana.length) {
                 let char2 = kana.substring(i, i + 2); let char1 = kana.substring(i, i + 1);
                 if (kanaMap[char2]) { roma += kanaMap[char2]; i += 2; }
                 else if (kanaMap[char1]) { roma += kanaMap[char1]; i += 1; }
-                else if (char1 === 'っ') { i += 1; let nextRoma = toRoma(kana.substring(i, i + 1)); if (nextRoma) roma += nextRoma[0]; }
+                else if (char1 === 'っ') { i += 1; let next = toRoma(kana.substring(i, i + 1)); if (next) roma += next[0]; }
                 else { roma += char1; i += 1; }
             }
             return roma;
         }
 
         let isAudioEnabled = true, shuffledList = [], currentQ = null, charIndex = 0, solvedCount = 0, totalInCourse = 0, isStarted = false, lastCourseType = 0;
-        const inputElement = document.getElementById("hidden-input"), romaDisplay = document.getElementById("roma-display"), questionBox = document.getElementById("question-box"), resultScreen = document.getElementById("result-screen");
+        const inputElement = document.getElementById("hidden-input"), romaDisplay = document.getElementById("roma-display"), resultScreen = document.getElementById("result-screen");
 
         function selectCourse(type) {
             lastCourseType = type; solvedCount = 0; resultScreen.style.display = "none";
             document.querySelectorAll('.course-btn').forEach(btn => btn.classList.remove('active'));
             document.getElementById(`btn-course-${type}`).classList.add('active');
-            if(type === 2) shuffledList = aiuData.map(k => ({ k: k, r: toRoma(k) })).sort(() => Math.random() - 0.5);
-            else shuffledList = rawData.filter(d => d[type] !== "").map(d => ({ k: d[type], r: toRoma(d[type]) })).sort(() => Math.random() - 0.5);
+            shuffledList = dataSet[type].map(k => ({ k: k, r: toRoma(k) })).sort(() => Math.random() - 0.5);
             totalInCourse = shuffledList.length; document.getElementById("total-count").innerText = totalInCourse;
             updateProgress(); isStarted = true; nextQuestion();
         }
 
+        function createConfetti() {
+            for (let i = 0; i < 60; i++) {
+                const c = document.createElement('div');
+                c.className = 'confetti';
+                c.style.left = Math.random() * 100 + 'vw';
+                c.style.backgroundColor = `hsl(${Math.random() * 360}, 80%, 60%)`;
+                c.style.animationDelay = Math.random() * 2 + 's';
+                document.body.appendChild(c);
+                setTimeout(() => c.remove(), 3000);
+            }
+        }
+
         function nextQuestion() {
             if (shuffledList.length === 0) {
-                document.getElementById("result-text").innerText = `全 ${totalInCourse} 問を完了しました！`;
-                resultScreen.style.display = "flex"; isStarted = false; return;
+                document.getElementById("result-text").innerText = `全 ${totalInCourse} 問 完走！`;
+                document.getElementById("result-rank").innerText = totalInCourse >= 40 ? "タイピング・マスター！" : "すごい！！";
+                resultScreen.style.display = "flex"; isStarted = false;
+                createConfetti(); return;
             }
             currentQ = shuffledList.pop(); charIndex = 0; updateDisplay();
             if (isAudioEnabled) { speechSynthesis.cancel(); let uttr = new SpeechSynthesisUtterance(currentQ.k); uttr.lang = 'ja-JP'; speechSynthesis.speak(uttr); }
@@ -189,7 +203,6 @@
         }
 
         function updateProgress() { document.getElementById("current-count").innerText = solvedCount; }
-
         function updateDisplay() {
             document.getElementById("sub-display").innerText = currentQ.k;
             let html = "";
@@ -224,14 +237,21 @@
             document.querySelectorAll('.finger-dot').forEach(d => d.classList.remove('active'));
         }
 
-        function triggerOkEffect() { const el = document.createElement('div'); el.className = 'ok-effect'; el.innerText = 'OK!'; questionBox.appendChild(el); setTimeout(() => el.remove(), 500); }
+        function triggerOkEffect() {
+            const el = document.createElement('div');
+            el.className = 'ok-effect'; el.innerText = 'OK!';
+            document.getElementById("question-box").appendChild(el);
+            setTimeout(() => el.remove(), 500);
+        }
 
         inputElement.addEventListener("input", (e) => {
             if (!isStarted || !e.target.value) return;
             const typed = e.target.value.toLowerCase(); const target = currentQ.r[charIndex];
             if (typed.endsWith(target)) {
                 charIndex++; updateDisplay();
-                if (charIndex === currentQ.r.length) { solvedCount++; updateProgress(); triggerOkEffect(); setTimeout(nextQuestion, 300); }
+                if (charIndex === currentQ.r.length) { 
+                    solvedCount++; updateProgress(); triggerOkEffect(); setTimeout(nextQuestion, 300); 
+                }
             }
             e.target.value = "";
         });
