@@ -219,9 +219,9 @@
             if (shuffledList.length === 0) {
                 const rankEl = document.getElementById("result-rank");
                 const textEl = document.getElementById("result-text");
-                if (totalInCourse >= 40) rankEl.innerText = "?? タイピング・レジェンド ??";
-                else if (totalInCourse >= 20) rankEl.innerText = "?? タイピングの達人 ??";
-                else rankEl.innerText = "? タイピングの天才 ?";
+                if (totalInCourse >= 40) rankEl.innerText = "タイピング・レジェンド！";
+                else if (totalInCourse >= 20) rankEl.innerText = "！タイピングの達人！";
+                else rankEl.innerText = "タイピングの天才！";
                 textEl.innerText = `${totalInCourse}問 ぜんぶクリア！キミならできると信じてたよ！`;
                 document.getElementById("result-screen").style.display = "flex";
                 isStarted = false; startConfetti(); return;
@@ -279,3 +279,4 @@
     </script>
 </body>
 </html>
+
