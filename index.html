@@ -202,7 +202,8 @@
   // 記号
   'ー':'-'
 };
-        
+
+        /*
         function toRoma(kana) {
             let roma = ""; let i = 0;
             while (i < kana.length) {
@@ -216,7 +217,48 @@
             }
             return roma;
         }
-
+*/
+        function toRoma(kana) {
+            let roma = ""; let i = 0;
+            while (i < kana.length) {
+                let c2 = kana.substring(i, i+2); 
+                let c1 = kana.substring(i, i+1);
+                
+                if (kanaMap[c2]) { 
+                    roma += kanaMap[c2]; 
+                    i += 2; 
+                }
+                else if (c1 === 'っ') { 
+                    // 次の文字が「ちゃ」などの2文字セットかチェック
+                    let nextKana = "";
+                    let c2_next = kana.substring(i+1, i+3);
+                    
+                    if (kanaMap[c2_next]) {
+                        nextKana = c2_next; // 「ちゃ」「しゅ」などの場合
+                    } else {
+                        nextKana = kana.substring(i+1, i+2); // 通常の1文字の場合
+                    }
+                    
+                    let next = toRoma(nextKana); 
+                    
+                    if (nextKana && next) { 
+                        // 次の文字の子音を重ねて追加する
+                        roma += next[0] + next; 
+                        // 「っ(1文字)」＋「次の文字(1文字 or 2文字)」の分だけ進める
+                        i += 1 + nextKana.length; 
+                    } else { 
+                        // 文末の「っ」などは単体で処理
+                        roma += "xtu"; 
+                        i += 1; 
+                    }
+                }
+                else { 
+                    roma += kanaMap[c1] || c1; 
+                    i += 1; 
+                }
+            }
+            return roma;
+        }
         let isAudioEnabled = true, shuffledList = [], currentQ = null, charIndex = 0, solvedCount = 0, totalInCourse = 0, isStarted = false, currentCourseIdx = 0, sortedGlobalData = [];
         const inputElement = document.getElementById("hidden-input"), romaDisplay = document.getElementById("roma-display");
 
@@ -335,6 +377,7 @@
     </script>
 </body>
 </html>
+
 
 
 
